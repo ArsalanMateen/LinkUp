@@ -1,0 +1,10 @@
+{
+  "name": "linkup",
+  "version": "1.0.0",
+  "description": "LinkUp Social Media Application",
+  "type": "module",
+  "private": true,
+  "scripts": {},
+  "author": "Arsalan Mateen",
+  "license": "MIT"
+}
