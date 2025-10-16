@@ -4,7 +4,9 @@
   "description": "LinkUp Social Media Application",
   "type": "module",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "server": "npm --prefix server start"
+  },
   "author": "Arsalan Mateen",
   "license": "MIT"
 }
