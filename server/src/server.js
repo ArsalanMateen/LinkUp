@@ -1,2 +1,3 @@
 import app from "./app.js";
-app.listen(process.env.PORT || 5000);
+import config from "./config/config.js";
+app.listen(config.port);
