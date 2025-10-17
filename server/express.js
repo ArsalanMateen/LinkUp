@@ -23,4 +23,13 @@ app.use(
   }),
 );
 
+app.use((err, req, res, next) => {
+  if (err) {
+    res.status(400).json({ error: err.name + ": " + err.message });
+    console.log(err);
+  } else {
+    next();
+  }
+});
+
 export default app;
