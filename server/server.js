@@ -1,7 +1,19 @@
+import config from "./config/config.js";
 import app from "./express.js";
+import mongoose from "mongoose";
 
-const port = process.env.PORT || 5000;
+mongoose.Promise = global.Promise;
 
-app.listen(port, () => {
-  console.info("Server started on port %s.", port);
-});
+try {
+  await mongoose.connect(config.mongoUri, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  });
+  app.listen(config.port, () => {
+    console.info("Database connected. Server started on port %s.", config.port);
+  });
+} catch (error) {
+  console.error("Server startup failed: unable to connect to MongoDB.");
+  process.exitCode = 1;
+}
