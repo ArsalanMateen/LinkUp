@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use("/", userRoutes);
 
 app.use((err, req, res, next) => {
   if (err) {
