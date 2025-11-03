@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Link } from "react-router-dom";
 import { create } from "../../../users/api/usersApi";
 import useAction from "../../../../shared/hooks/useAction";
 import logoImg from "../../../../shared/assets/images/logo.png";
@@ -56,11 +56,15 @@ export default function Signup() {
 
         {formState.open ? (
           <div className={styles.success}>
-            <h2 className={styles.successTitle}>Account Created!</h2>
+            <h2 className={styles.successTitle}>
+              Account Created!
+            </h2>
             <p className={styles.successText}>
               Your account has been successfully created. You can now sign in.
             </p>
-            <span>Your account is ready.</span>
+            <Link to="/signin" className={styles.signInButton}>
+              Explore LinkUp
+            </Link>
           </div>
         ) : (
           <form onSubmit={clickSubmit} className={styles.form}>
@@ -95,7 +99,10 @@ export default function Signup() {
             </div>
 
             <div className={styles.inputGroup}>
-              <label htmlFor="signup-password" className={styles.label}>
+              <label
+                htmlFor="signup-password"
+                className={styles.label}
+              >
                 Password
               </label>
               <input
@@ -127,7 +134,10 @@ export default function Signup() {
 
         {!formState.open && (
           <p className={styles.footer}>
-            Already have an account? <span>Your account is ready.</span>
+            Already have an account?{" "}
+            <Link to="/signin" className={styles.link}>
+              Sign in
+            </Link>
           </p>
         )}
       </div>

@@ -103,6 +103,16 @@
   text-align: center;
 }
 
+.link {
+  color: #5c60f5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
 .success {
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
@@ -122,4 +132,21 @@
   font-size: 14px;
   color: #15803d;
   margin-bottom: 20px;
+}
+
+.signInButton {
+  display: inline-block;
+  padding: 9px 24px;
+  background-color: #5c60f5;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.signInButton:hover {
+  background-color: #4e52e2;
+  color: #ffffff;
+  text-decoration: none;
 }
