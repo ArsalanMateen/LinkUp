@@ -3,6 +3,12 @@ import { fileURLToPath } from "url";
 
 dotenv.config({ path: fileURLToPath(new URL("../.env", import.meta.url)) });
 
+if (!process.env.JWT_SECRET?.trim()) {
+  throw new Error(
+    "JWT_SECRET is required. Set it in server/.env or the environment.",
+  );
+}
+
 const config = {
   env: process.env.NODE_ENV || "development",
   port: process.env.PORT || 5000,
