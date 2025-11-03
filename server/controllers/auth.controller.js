@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import expressJwt from "express-jwt";
 import config from "../config/config.js";
 
 const signin = async (req, res) => {
@@ -25,4 +26,9 @@ const signout = (req, res) => {
   return res.status(200).json({ message: "signed out" });
 };
 
-export default { signin, signout };
+const requireSignin = expressJwt({
+  secret: config.jwtSecret,
+  userProperty: "auth",
+});
+
+export default { signin, signout, requireSignin };
