@@ -1,5 +1,8 @@
 import User from "../models/user.model.js";
+import lodash from "lodash";
+const { extend } = lodash;
 import errorHandler from "../helpers/dbErrorHandler.js";
+import formidable from "formidable";
 
 const create = async (req, res) => {
   const user = new User(req.body);
@@ -37,4 +40,25 @@ const read = (req, res) => {
   return res.json(req.profile);
 };
 
-export default { create, list, userByID, read };
+const update = (req, res) => {
+  const uploadForm = new formidable.IncomingForm();
+  uploadForm.keepExtensions = true;
+  uploadForm.parse(req, async (err, fields) => {
+    if (err)
+      return res.status(400).json({ error: "Profile could not be updated" });
+    let user = extend(req.profile, fields);
+    user.updated = Date.now();
+    try {
+      await user.save();
+      user.hashed_password = undefined;
+      user.salt = undefined;
+      return res.json(user);
+    } catch (saveError) {
+      return res
+        .status(400)
+        .json({ error: errorHandler.getErrorMessage(saveError) });
+    }
+  });
+};
+
+export default { create, list, userByID, read, update };
