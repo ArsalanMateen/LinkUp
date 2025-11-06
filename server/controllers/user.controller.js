@@ -3,6 +3,7 @@ import lodash from "lodash";
 const { extend } = lodash;
 import errorHandler from "../helpers/dbErrorHandler.js";
 import formidable from "formidable";
+import { uploadToR2, deleteFromR2 } from "../helpers/storage.js";
 
 const create = async (req, res) => {
   const user = new User(req.body);
@@ -25,7 +26,7 @@ const list = async (req, res) => {
 
 const userByID = async (req, res, next, id) => {
   try {
-    const user = await User.findById(id).exec();
+    const user = await User.findById(id);
     if (!user) return res.status(400).json({ error: "User not found" });
     req.profile = user;
     next();
@@ -43,11 +44,26 @@ const read = (req, res) => {
 const update = (req, res) => {
   const uploadForm = new formidable.IncomingForm();
   uploadForm.keepExtensions = true;
-  uploadForm.parse(req, async (err, fields) => {
+  uploadForm.parse(req, async (err, fields, uploadedFiles) => {
     if (err)
-      return res.status(400).json({ error: "Profile could not be updated" });
+      return res.status(400).json({ error: "Photo could not be uploaded" });
     let user = extend(req.profile, fields);
     user.updated = Date.now();
+    if (uploadedFiles.photo) {
+      try {
+        if (user.photo && user.photo.key) {
+          await deleteFromR2(user.photo.key).catch(console.error);
+        }
+        const { url, key } = await uploadToR2(
+          uploadedFiles.photo.path,
+          uploadedFiles.photo.type,
+          "avatars"
+        );
+        user.photo = { url, key, contentType: uploadedFiles.photo.type };
+      } catch (uploadError) {
+        return res.status(400).json({ error: "Failed to upload image to cloud storage" });
+      }
+    }
     try {
       await user.save();
       user.hashed_password = undefined;
@@ -61,4 +77,10 @@ const update = (req, res) => {
   });
 };
 
-export default { create, list, userByID, read, update };
+export default {
+  create,
+  list,
+  userByID,
+  read,
+  update,
+};

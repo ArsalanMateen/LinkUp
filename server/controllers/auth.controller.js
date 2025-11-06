@@ -14,7 +14,12 @@ const signin = async (req, res) => {
     res.cookie("t", token, { expire: new Date() + 9999 });
     return res.json({
       token,
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        photo: user.photo,
+      },
     });
   } catch (err) {
     return res.status(401).json({ error: "Could not sign in" });
