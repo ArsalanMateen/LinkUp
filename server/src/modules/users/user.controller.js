@@ -13,4 +13,20 @@ const create = async (req, res) => {
   }
 };
 
-export default { create };
+const userByID = async (req, res, next, id) => {
+  try {
+    const user = await User.findById(id).exec();
+    if (!user) return res.status(400).json({ error: "User not found" });
+    req.profile = user;
+    next();
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve user" });
+  }
+};
+
+const read = (req, res) => {
+  const { _id, name, email, created } = req.profile;
+  return res.json({ _id, name, email, created });
+};
+
+export default { create, userByID, read };
