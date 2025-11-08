@@ -3,6 +3,9 @@ import lodash from "lodash";
 const { extend } = lodash;
 import errorHandler from "../helpers/dbErrorHandler.js";
 import formidable from "formidable";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { uploadToR2, deleteFromR2 } from "../helpers/storage.js";
 
 const create = async (req, res) => {
@@ -77,10 +80,41 @@ const update = (req, res) => {
   });
 };
 
+const photo = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.userId)
+      .select("photo")
+      .lean();
+    if (user?.photo?.url) {
+      return res.redirect(302, user.photo.url);
+    }
+    if (user?.photo?.data) {
+      res.set("Content-Type", user.photo.contentType);
+      res.set("Cache-Control", "public, max-age=31536000, immutable");
+      return res.send(user.photo.data);
+    }
+    next();
+  } catch (err) {
+    next();
+  }
+};
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const defaultPhotoPath = fs.existsSync(
+  path.resolve(__dirname, "../../client/src/assets/images/placeholder.png"),
+)
+  ? path.resolve(__dirname, "../../client/src/assets/images/placeholder.png")
+  : path.resolve(__dirname, "../../client/assets/images/placeholder.png");
+
+const defaultPhoto = (req, res) => res.sendFile(defaultPhotoPath);
+
 export default {
   create,
   list,
   userByID,
   read,
   update,
+  photo,
+  defaultPhoto,
 };

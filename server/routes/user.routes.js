@@ -5,6 +5,11 @@ import authCtrl from "../controllers/auth.controller.js";
 const router = express.Router();
 
 router.route("/api/users").get(userCtrl.list).post(userCtrl.create);
+
+router
+  .route("/api/users/photo/:userId")
+  .get(userCtrl.photo, userCtrl.defaultPhoto);
+router.route("/api/users/defaultphoto").get(userCtrl.defaultPhoto);
 router
   .route("/api/users/:userId")
   .get(userCtrl.read)
