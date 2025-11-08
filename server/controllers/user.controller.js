@@ -109,6 +109,20 @@ const defaultPhotoPath = fs.existsSync(
 
 const defaultPhoto = (req, res) => res.sendFile(defaultPhotoPath);
 
+const remove = async (req, res) => {
+  try {
+    const deletedUser = await req.profile.remove();
+    if (deletedUser.photo && deletedUser.photo.key) {
+      await deleteFromR2(deletedUser.photo.key).catch(console.error);
+    }
+    deletedUser.hashed_password = undefined;
+    deletedUser.salt = undefined;
+    return res.json(deletedUser);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 export default {
   create,
   list,
@@ -117,4 +131,5 @@ export default {
   update,
   photo,
   defaultPhoto,
+  remove,
 };
