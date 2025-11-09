@@ -1,0 +1,28 @@
+.root {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.paddingNone {
+  padding: 0;
+}
+
+.paddingSm {
+  padding: 12px 16px;
+}
+
+.paddingMd {
+  padding: 20px 24px;
+}
+
+.paddingLg {
+  padding: 28px 32px;
+}
+
+.hoverable:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-border-hover, #cbd5e1);
+}

@@ -1,0 +1,36 @@
+.root {
+  border-radius: var(--radius-avatar);
+  object-fit: cover;
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-avatar);
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.sizeXs {
+  width: 28px;
+  height: 28px;
+}
+
+.sizeSm {
+  width: 34px;
+  height: 34px;
+}
+
+.sizeMd {
+  width: 44px;
+  height: 44px;
+}
+
+.sizeLg {
+  width: 64px;
+  height: 64px;
+  border-width: 2px;
+}
+
+.sizeXl {
+  width: 84px;
+  height: 84px;
+  border-width: 2px;
+}
