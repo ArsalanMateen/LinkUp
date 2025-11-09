@@ -32,6 +32,9 @@ export default function Signin(props) {
     login({ email: formState.email, password: formState.password });
   };
 
+  const loginAsDemo = () =>
+    login({ email: "emilys@example.com", password: "password" });
+
   const { from } = (props.location && props.location.state) || {
     from: { pathname: "/" },
   };
@@ -59,7 +62,9 @@ export default function Signin(props) {
           className={styles.logo}
         />
         <h1 className={styles.title}>Welcome back</h1>
-        <p className={styles.subtitle}>Sign in to your LinkUp account</p>
+        <p className={styles.subtitle}>
+          Sign in to your LinkUp account
+        </p>
 
         <form onSubmit={clickSubmit} className={styles.form}>
           <div className={styles.inputGroup}>
@@ -78,7 +83,10 @@ export default function Signin(props) {
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="signin-password" className={styles.label}>
+            <label
+              htmlFor="signin-password"
+              className={styles.label}
+            >
               Password
             </label>
             <input
@@ -106,6 +114,23 @@ export default function Signin(props) {
             Sign In
           </button>
         </form>
+
+        <div className={styles.divider}>
+          <span className={styles.dividerLine}></span>
+          <span className={styles.dividerText}>or</span>
+          <span className={styles.dividerLine}></span>
+        </div>
+
+        <div className={styles.demo}>
+          <button
+            type="button"
+            className={styles.demoButton}
+            disabled={action.pending}
+            onClick={loginAsDemo}
+          >
+            Sign in as Emily Johnson
+          </button>
+        </div>
 
         <p className={styles.footer}>
           Don&apos;t have an account?{" "}
