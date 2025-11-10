@@ -13,6 +13,21 @@ const create = async (req, res) => {
   }
 };
 
+const list = async (req, res) => {
+  try {
+    return res.json(
+      await User.find()
+        .select("_id name email created")
+        .sort({ created: -1, _id: -1 })
+        .limit(20)
+        .lean()
+        .exec(),
+    );
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const userByID = async (req, res, next, id) => {
   try {
     const user = await User.findById(id).exec();
@@ -29,4 +44,4 @@ const read = (req, res) => {
   return res.json({ _id, name, email, created });
 };
 
-export default { create, userByID, read };
+export default { create, userByID, read, list };
