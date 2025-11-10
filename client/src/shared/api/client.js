@@ -1,3 +1,4 @@
+import defaultAvatar from "../assets/images/placeholder.png";
 const backendUrl = (import.meta.env?.VITE_API_BASE_URL || "")
   .trim()
   .replace(/\/+$/, "");
@@ -27,3 +28,10 @@ export async function request(
     );
   return data;
 }
+
+export const avatarUrl = (user) => {
+  if (!user || !user._id) return defaultAvatar;
+  if (typeof user.photo === "string" && user.photo) return user.photo;
+  if (user.photo && user.photo.url) return user.photo.url;
+  return defaultAvatar;
+};

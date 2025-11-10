@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import Home from "../features/feed/pages/Home/Home.jsx";
 import Signup from "../features/auth/pages/SignUp/SignUp.jsx";
 import Signin from "../features/auth/pages/SignIn/SignIn.jsx";
+import Profile from "../features/users/pages/Profile/Profile.jsx";
 import Navbar from "./layout/Navbar/Navbar";
 export default function MainRouter() {
   return (
@@ -12,6 +13,7 @@ export default function MainRouter() {
         <Route exact path="/" component={Home} />
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/signin" component={Signin} />
+        <Route exact path="/user/:userId" component={Profile} />
       </Switch>
     </div>
   );
