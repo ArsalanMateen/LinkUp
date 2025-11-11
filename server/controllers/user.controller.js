@@ -29,7 +29,10 @@ const list = async (req, res) => {
 
 const userByID = async (req, res, next, id) => {
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id)
+      .populate("following", "_id name photo")
+      .populate("followers", "_id name photo")
+      .exec();
     if (!user) return res.status(400).json({ error: "User not found" });
     req.profile = user;
     next();
@@ -123,6 +126,35 @@ const remove = async (req, res) => {
   }
 };
 
+const addFollowing = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $push: { following: req.body.followId },
+    });
+    next();
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+const addFollower = async (req, res) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.body.followId,
+      { $push: { followers: req.body.userId } },
+      { new: true },
+    )
+      .populate("following", "_id name photo")
+      .populate("followers", "_id name photo")
+      .exec();
+    updatedUser.hashed_password = undefined;
+    updatedUser.salt = undefined;
+    return res.json(updatedUser);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 export default {
   create,
   list,
@@ -132,4 +164,6 @@ export default {
   photo,
   defaultPhoto,
   remove,
+  addFollowing,
+  addFollower,
 };
