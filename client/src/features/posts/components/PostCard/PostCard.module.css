@@ -1,0 +1,53 @@
+.root {
+  margin-bottom: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.authorName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-decoration: none;
+}
+
+.authorName:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.authorHandle {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.time {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #334155;
+  margin: 0 0 14px 0;
+  word-break: break-word;
+  white-space: pre-line;
+}

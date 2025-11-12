@@ -2,6 +2,8 @@ import Post from "./post.model.js";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
 import formidable from "formidable";
 
+import { listPostSummaries } from "./postLists.js";
+
 const create = (req, res) => {
   const form = new formidable.IncomingForm();
   form.parse(req, async (err, fields) => {
@@ -21,4 +23,18 @@ const create = (req, res) => {
   });
 };
 
-export default { create };
+const listPublic = async (req, res) => {
+  try {
+    const posts = await listPostSummaries(
+      {},
+      { created: -1 },
+      30,
+      req.auth?._id,
+    );
+    return res.json(posts);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+export default { create, listPublic };
