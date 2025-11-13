@@ -21,12 +21,16 @@ router
     userCtrl.removeFollowing,
     userCtrl.removeFollower,
   );
+
 router
-  .route("/api/users/:userId")
+  .route("/api/users/findpeople/:uId")
+  .get(authCtrl.requireSignin, userCtrl.findPeople);
+router
+  .route("/api/users/:uId")
   .get(userCtrl.read)
   .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update)
   .delete(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.remove);
 
-router.param("userId", userCtrl.userByID);
+router.param("uId", userCtrl.userByID);
 
 export default router;

@@ -20,7 +20,7 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    const users = await User.find().select("name email updated created");
+    const users = await User.find().select("name email updated created photo");
     return res.json(users);
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
@@ -184,6 +184,19 @@ const removeFollower = async (req, res) => {
   }
 };
 
+const findPeople = async (req, res) => {
+  const followingUserIds = req.profile.following;
+  followingUserIds.push(req.profile._id);
+  try {
+    const users = await User.find({ _id: { $nin: followingUserIds } })
+      .select("name about email photo")
+      .limit(10);
+    return res.json(users);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 export default {
   create,
   list,
@@ -197,4 +210,5 @@ export default {
   addFollower,
   removeFollowing,
   removeFollower,
+  findPeople,
 };
