@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRoutes from "./modules/users/user.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
+import postRoutes from "./modules/posts/post.routes.js";
 
 const app = express();
 app.get("/health", (req, res) => res.json({ status: "ok" }));
@@ -13,6 +14,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use("/", userRoutes);
 app.use("/", authRoutes);
+app.use("/", postRoutes);
 app.use((err, req, res, next) => {
   if (err)
     res

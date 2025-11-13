@@ -3,16 +3,27 @@ import useProfile from "../../hooks/useProfile";
 import RequestState from "../../../../shared/ui/RequestState/RequestState";
 import ProfileHero from "../../components/ProfileHero/ProfileHero";
 import styles from "./Profile.module.css";
+import useProfilePosts from "../../../posts/hooks/useProfilePosts";
+import PostList from "../../../posts/components/PostList/PostList";
 export default function Profile({ match }) {
   const profile = useProfile(match.params.userId);
   const user = profile.data?.user;
+  const posts = useProfilePosts(match.params.userId);
   return (
     <main className={styles.page}>
-      {user && <ProfileHero user={user} />}
+      {user && <ProfileHero user={user} postsCount={posts.posts.length} />}
       <RequestState
         loading={profile.loading}
         error={profile.error}
         onRetry={profile.retry}
+      />
+      <h2 className={styles.sectionTitle}>Posts</h2>
+      <PostList
+        posts={posts.posts}
+        loading={posts.loading}
+        error={posts.error}
+        onRetry={posts.refresh}
+        onRemove={posts.removePost}
       />
     </main>
   );
