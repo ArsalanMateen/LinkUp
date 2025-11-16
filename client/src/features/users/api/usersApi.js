@@ -24,3 +24,11 @@ export const follow = (params, credentials, followId) =>
     json: { userId: params.userId, followId },
     validate: isRecord,
   });
+
+export const unfollow = (params, credentials, unfollowId) =>
+  request("/api/users/unfollow/", {
+    method: "PUT",
+    token: credentials.t,
+    json: { userId: params.userId, unfollowId },
+    validate: isRecord,
+  });

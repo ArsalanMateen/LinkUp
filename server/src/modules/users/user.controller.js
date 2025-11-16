@@ -90,4 +90,38 @@ const addFollower = async (req, res) => {
   }
 };
 
-export default { create, userByID, read, list, addFollowing, addFollower };
+const removeFollowing = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $pull: { following: req.body.unfollowId },
+    });
+    next();
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+const removeFollower = async (req, res) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.body.unfollowId,
+      { $pull: { followers: req.body.userId } },
+      { new: true },
+    ).exec();
+
+    return res.json(publicProfile(updatedUser, req.auth?._id));
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+export default {
+  create,
+  userByID,
+  read,
+  list,
+  addFollowing,
+  addFollower,
+  removeFollowing,
+  removeFollower,
+};
