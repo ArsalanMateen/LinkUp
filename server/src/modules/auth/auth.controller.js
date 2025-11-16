@@ -43,6 +43,15 @@ const requireSignin = expressJwt({
   algorithms: ["HS256"],
 });
 
+// Public profile/list reads can personalize existing follow controls without
+// fetching an actor's complete graph. Supplied invalid tokens still return 401.
+const optionalSignin = expressJwt({
+  secret: config.jwtSecret,
+  userProperty: "auth",
+  algorithms: ["HS256"],
+  credentialsRequired: false,
+});
+
 const hasAuthorization = (req, res, next) => {
   const isAuthorized =
     req.profile &&
@@ -56,4 +65,4 @@ const hasAuthorization = (req, res, next) => {
   next();
 };
 
-export default { signin, signout, requireSignin, hasAuthorization };
+export default { signin, signout, requireSignin, optionalSignin, hasAuthorization };

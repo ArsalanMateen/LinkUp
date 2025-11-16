@@ -39,9 +39,55 @@ const userByID = async (req, res, next, id) => {
   }
 };
 
-const read = (req, res) => {
-  const { _id, name, email, created } = req.profile;
-  return res.json({ _id, name, email, created });
+const publicProfile = (user, actorId) => {
+  const fields = [
+    "_id",
+    "name",
+    "email",
+    "photo",
+    "about",
+    "created",
+    "updated",
+  ];
+
+  return {
+    ...Object.fromEntries(fields.map((field) => [field, user[field]])),
+    followersCount: (user.followers || []).length,
+    followingCount: (user.following || []).length,
+    followedByMe: Boolean(
+      actorId &&
+      (user.followers || []).some(
+        (id) => String(id?._id || id) === String(actorId),
+      ),
+    ),
+  };
 };
 
-export default { create, userByID, read, list };
+const read = (req, res) => res.json(publicProfile(req.profile, req.auth?._id));
+
+const addFollowing = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $push: { following: req.body.followId },
+    });
+    next();
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+const addFollower = async (req, res) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.body.followId,
+      { $push: { followers: req.body.userId } },
+      { new: true },
+    ).exec();
+
+    return res.json(publicProfile(updatedUser, req.auth?._id));
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+export default { create, userByID, read, list, addFollowing, addFollower };
