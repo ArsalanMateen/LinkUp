@@ -5,13 +5,26 @@ import ProfileHero from "../../components/ProfileHero/ProfileHero";
 import styles from "./Profile.module.css";
 import useProfilePosts from "../../../posts/hooks/useProfilePosts";
 import PostList from "../../../posts/components/PostList/PostList";
+import useFollowActions from "../../hooks/useFollowActions";
+import { useAuth } from "../../../auth/context/AuthProvider";
 export default function Profile({ match }) {
   const profile = useProfile(match.params.userId);
   const user = profile.data?.user;
   const posts = useProfilePosts(match.params.userId);
+  const { session } = useAuth();
+  const follow = useFollowActions(profile, () => {});
   return (
     <main className={styles.page}>
-      {user && <ProfileHero user={user} postsCount={posts.posts.length} />}
+      {user && (
+        <ProfileHero
+          user={user}
+          postsCount={posts.posts.length}
+          isOwner={user?._id === session?.user._id}
+          isFollowing={Boolean(user?.followedByMe)}
+          pending={follow.pending}
+          onFollowToggle={() => follow.toggle(user)}
+        />
+      )}
       <RequestState
         loading={profile.loading}
         error={profile.error}

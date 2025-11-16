@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Card } from "../../../../shared/ui";
+import { Avatar, Card, Button } from "../../../../shared/ui";
 import { getHandle } from "../../../../shared/utils/format";
 import styles from "./ProfileHero.module.css";
 export default function ProfileHero({
@@ -26,6 +26,31 @@ export default function ProfileHero({
               })}
             </p>
           </div>
+        </div>
+        {!isOwner && (
+          <div className={styles.actions}>
+            <Button
+              onClick={onFollowToggle}
+              disabled={pending}
+              variant={isFollowing ? "outline" : "primary"}
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </Button>
+          </div>
+        )}
+      </div>
+      <div className={styles.stats}>
+        <div className={styles.stat}>
+          <span className={styles.statCount}>{postsCount || 0}</span>
+          <span className={styles.statLabel}>Posts</span>
+        </div>
+        <div className={styles.stat}>
+          <span className={styles.statCount}>{user.followingCount || 0}</span>
+          <span className={styles.statLabel}>Following</span>
+        </div>
+        <div className={styles.stat}>
+          <span className={styles.statCount}>{user.followersCount || 0}</span>
+          <span className={styles.statLabel}>Followers</span>
         </div>
       </div>
     </Card>
