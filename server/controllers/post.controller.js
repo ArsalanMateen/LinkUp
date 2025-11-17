@@ -15,4 +15,16 @@ const create = async (req, res) => {
   }
 };
 
-export default { create };
+const listByUser = async (req, res) => {
+  try {
+    const posts = await Post.find({ postedBy: req.profile._id })
+      .populate("postedBy", "_id name")
+      .sort("-created")
+      .exec();
+    return res.json(posts);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+export default { create, listByUser };
