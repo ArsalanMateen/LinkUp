@@ -108,11 +108,26 @@ const listNewsFeed = async (req, res) => {
   }
 };
 
+const listPublic = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .select("-photo.data")
+      .populate("postedBy", "_id name photo")
+      .sort("-created")
+      .limit(30)
+      .exec();
+    return res.json(posts);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 export default {
   create,
   postByID,
   listByUser,
   listNewsFeed,
+  listPublic,
   photo,
   isPoster,
 };
