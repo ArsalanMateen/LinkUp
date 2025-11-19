@@ -93,10 +93,26 @@ const listByUser = async (req, res) => {
   }
 };
 
+const listNewsFeed = async (req, res) => {
+  const followingUserIds = req.profile.following;
+  followingUserIds.push(req.profile._id);
+  try {
+    const posts = await Post.find({ postedBy: { $in: req.profile.following } })
+      .select("-photo.data")
+      .populate("postedBy", "_id name photo")
+      .sort("-created")
+      .exec();
+    return res.json(posts);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 export default {
   create,
   postByID,
   listByUser,
+  listNewsFeed,
   photo,
   isPoster,
 };
