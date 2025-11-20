@@ -85,6 +85,19 @@ const like = async (req, res) => {
   }
 };
 
+const unlike = async (req, res) => {
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $pull: { likes: req.body.userId } },
+      { new: true },
+    );
+    return res.json(updatedPost);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const isPoster = (req, res, next) => {
   const isPostAuthor =
     req.post && req.auth && req.post.postedBy._id == req.auth._id;
@@ -143,5 +156,6 @@ export default {
   listPublic,
   photo,
   like,
+  unlike,
   isPoster,
 };
