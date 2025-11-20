@@ -29,6 +29,7 @@ const create = (req, res) => {
       const savedPost = await post.save();
       const populatedPost = await Post.findById(savedPost._id)
         .select("-photo.data")
+        .populate("comments.postedBy", "_id name photo")
         .populate("postedBy", "_id name photo")
         .exec();
       return res.json(populatedPost);
@@ -43,6 +44,7 @@ const create = (req, res) => {
 const postByID = async (req, res, next, id) => {
   try {
     const post = await Post.findById(id)
+      .populate("comments.postedBy", "_id name photo")
       .populate("postedBy", "_id name photo")
       .exec();
     if (!post) return res.status(400).json({ error: "Post not found" });
@@ -98,6 +100,24 @@ const unlike = async (req, res) => {
   }
 };
 
+const comment = async (req, res) => {
+  const commentToAdd = req.body.comment;
+  commentToAdd.postedBy = req.body.userId;
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $push: { comments: commentToAdd } },
+      { new: true },
+    )
+      .populate("comments.postedBy", "_id name photo")
+      .populate("postedBy", "_id name photo")
+      .exec();
+    return res.json(updatedPost);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const isPoster = (req, res, next) => {
   const isPostAuthor =
     req.post && req.auth && req.post.postedBy._id == req.auth._id;
@@ -110,6 +130,7 @@ const listByUser = async (req, res) => {
   try {
     const posts = await Post.find({ postedBy: req.profile._id })
       .select("-photo.data")
+      .populate("comments.postedBy", "_id name photo")
       .populate("postedBy", "_id name photo")
       .sort("-created")
       .exec();
@@ -125,6 +146,7 @@ const listNewsFeed = async (req, res) => {
   try {
     const posts = await Post.find({ postedBy: { $in: req.profile.following } })
       .select("-photo.data")
+      .populate("comments.postedBy", "_id name photo")
       .populate("postedBy", "_id name photo")
       .sort("-created")
       .exec();
@@ -138,6 +160,7 @@ const listPublic = async (req, res) => {
   try {
     const posts = await Post.find()
       .select("-photo.data")
+      .populate("comments.postedBy", "_id name photo")
       .populate("postedBy", "_id name photo")
       .sort("-created")
       .limit(30)
@@ -157,5 +180,6 @@ export default {
   photo,
   like,
   unlike,
+  comment,
   isPoster,
 };
