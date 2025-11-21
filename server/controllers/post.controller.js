@@ -135,6 +135,18 @@ const uncomment = async (req, res) => {
   }
 };
 
+const remove = async (req, res) => {
+  try {
+    const deletedPost = await req.post.remove();
+    if (deletedPost.photo && deletedPost.photo.key) {
+      await deleteFromR2(deletedPost.photo.key).catch(console.error);
+    }
+    return res.json(deletedPost);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const isPoster = (req, res, next) => {
   const isPostAuthor =
     req.post && req.auth && req.post.postedBy._id == req.auth._id;
@@ -199,5 +211,6 @@ export default {
   unlike,
   comment,
   uncomment,
+  remove,
   isPoster,
 };
