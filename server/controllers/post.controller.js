@@ -118,6 +118,23 @@ const comment = async (req, res) => {
   }
 };
 
+const uncomment = async (req, res) => {
+  const commentToRemove = req.body.comment;
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $pull: { comments: { _id: commentToRemove._id } } },
+      { new: true },
+    )
+      .populate("comments.postedBy", "_id name photo")
+      .populate("postedBy", "_id name photo")
+      .exec();
+    return res.json(updatedPost);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const isPoster = (req, res, next) => {
   const isPostAuthor =
     req.post && req.auth && req.post.postedBy._id == req.auth._id;
@@ -181,5 +198,6 @@ export default {
   like,
   unlike,
   comment,
+  uncomment,
   isPoster,
 };
