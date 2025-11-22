@@ -9,6 +9,7 @@ try {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
+    ...(config.mongoDbName ? { dbName: config.mongoDbName } : {}),
   });
   app.listen(config.port, () => {
     console.info("Database connected. Server started on port %s.", config.port);

@@ -13,7 +13,9 @@ const config = {
   env: process.env.NODE_ENV || "development",
   port: process.env.PORT || 5000,
   jwtSecret: process.env.JWT_SECRET,
+  mongoDbName: process.env.LINKUP_NS?.trim() || undefined,
   mongoUri:
+    process.env.LINKUP_DB_URI ||
     process.env.MONGODB_URI ||
     process.env.MONGO_HOST ||
     "mongodb://" +
