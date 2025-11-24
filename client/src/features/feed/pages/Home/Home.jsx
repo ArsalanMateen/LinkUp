@@ -7,6 +7,7 @@ import PostList from "../../../posts/components/PostList/PostList";
 import { useAuth } from "../../../auth/context/AuthProvider";
 import PostComposer from "../../../posts/components/PostComposer/PostComposer";
 import useFeed from "../../hooks/useFeed";
+import Sidebar from "../../../../app/layout/Sidebar/Sidebar";
 export default function Home() {
   const load = useCallback((signal) => listPublic(signal), []);
   const resource = useResource(load);
@@ -14,6 +15,7 @@ export default function Home() {
   const feed = useFeed({ userId: session?.user._id, token: session?.token });
   return (
     <main className={styles.page}>
+      <Sidebar />
       <h1 className={styles.feedTitle}>Explore Community</h1>
       <PostList
         posts={session ? feed.posts : resource.data || []}
