@@ -6,20 +6,23 @@ import { listPublic } from "../../../posts/api/postsApi";
 import PostList from "../../../posts/components/PostList/PostList";
 import { useAuth } from "../../../auth/context/AuthProvider";
 import PostComposer from "../../../posts/components/PostComposer/PostComposer";
+import useFeed from "../../hooks/useFeed";
 export default function Home() {
   const load = useCallback((signal) => listPublic(signal), []);
   const resource = useResource(load);
   const { session } = useAuth();
+  const feed = useFeed({ userId: session?.user._id, token: session?.token });
   return (
     <main className={styles.page}>
       <h1 className={styles.feedTitle}>Explore Community</h1>
       <PostList
-        posts={resource.data || []}
-        loading={resource.loading}
-        error={resource.error}
-        onRetry={resource.retry}
+        posts={session ? feed.posts : resource.data || []}
+        loading={session ? feed.loading : resource.loading}
+        error={session ? feed.error : resource.error}
+        onRetry={session ? feed.refresh : resource.retry}
+        onRemove={feed.removePost}
       />
-      {session && <PostComposer onPostCreated={() => resource.retry()} />}
+      {session && <PostComposer onPostCreated={feed.prependPost} />}
     </main>
   );
 }

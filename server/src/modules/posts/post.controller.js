@@ -38,6 +38,22 @@ const listByUser = async (req, res) => {
   }
 };
 
+const listNewsFeed = async (req, res) => {
+  const targets = [...(req.profile.following || []), req.profile._id];
+  try {
+    return res.json(
+      await listPostSummaries(
+        { postedBy: { $in: targets } },
+        { created: -1, _id: -1 },
+        10,
+        req.auth._id,
+      ),
+    );
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const listPublic = async (req, res) => {
   try {
     const posts = await listPostSummaries(
@@ -52,4 +68,4 @@ const listPublic = async (req, res) => {
   }
 };
 
-export default { create, listPublic, listByUser };
+export default { create, listPublic, listByUser, listNewsFeed };
