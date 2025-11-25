@@ -25,6 +25,19 @@ function Icon({ children, fontSize, style, ...props }) {
   );
 }
 
+export const HomeRounded = (props) => (
+  <Icon {...props}>
+    <path d="m3 10 9-7 9 7v10H15v-7H9v7H3Z" />
+  </Icon>
+);
+
+export const PeopleAltOutlined = (props) => (
+  <Icon {...props}>
+    <circle cx="9" cy="7" r="3" />
+    <path d="M3 21v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6M18 13a5 5 0 0 1 3 5v3" />
+  </Icon>
+);
+
 export const PersonOutline = (props) => (
   <Icon {...props}>
     <circle cx="12" cy="7" r="4" />

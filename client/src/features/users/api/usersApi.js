@@ -16,3 +16,19 @@ export const read = (params, credentials, signal) =>
     signal,
     validate: isRecord,
   });
+
+export const follow = (params, credentials, followId) =>
+  request("/api/users/follow/", {
+    method: "PUT",
+    token: credentials.t,
+    json: { userId: params.userId, followId },
+    validate: isRecord,
+  });
+
+export const unfollow = (params, credentials, unfollowId) =>
+  request("/api/users/unfollow/", {
+    method: "PUT",
+    token: credentials.t,
+    json: { userId: params.userId, unfollowId },
+    validate: isRecord,
+  });
