@@ -1,0 +1,41 @@
+:root {
+  --color-primary: #5c60f5;
+  --color-primary-hover: #4e52e2;
+  --color-primary-light: #eef2ff;
+  --color-primary-subtle: #eef0ff;
+
+  --color-text-main: #0f172a;
+  --color-text-body: #334155;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #94a3b8;
+
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-avatar: #ffffff;
+  --bg-hover: #f8fafc;
+  --bg-subtle: #f1f5f9;
+
+  --border-color: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #5c60f5;
+
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --bg-danger-light: #fef2f2;
+  --border-danger-light: #fee2e2;
+
+  --focus-ring: 0 0 0 3px rgba(92, 96, 245, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-dropdown: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+
+  --radius-card: 16px;
+  --radius-modal: 18px;
+  --radius-input: 12px;
+  --radius-btn: 8px;
+  --radius-badge: 9999px;
+  --radius-avatar: 50%;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+}
