@@ -32,3 +32,10 @@ export const unfollow = (params, credentials, unfollowId) =>
     json: { userId: params.userId, unfollowId },
     validate: isRecord,
   });
+
+export const findPeople = (params, credentials, signal) =>
+  request("/api/users/findpeople/" + params.userId, {
+    token: credentials.t,
+    signal,
+    validate: isList,
+  });

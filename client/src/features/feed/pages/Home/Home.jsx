@@ -7,6 +7,7 @@ import PostList from "../../../posts/components/PostList/PostList";
 import { useAuth } from "../../../auth/context/AuthProvider";
 import PostComposer from "../../../posts/components/PostComposer/PostComposer";
 import useFeed from "../../hooks/useFeed";
+import DiscoverPeople from "../../../users/components/DiscoverPeople/DiscoverPeople";
 import Sidebar from "../../../../app/layout/Sidebar/Sidebar";
 export default function Home() {
   const load = useCallback((signal) => listPublic(signal), []);
@@ -25,6 +26,7 @@ export default function Home() {
         onRemove={feed.removePost}
       />
       {session && <PostComposer onPostCreated={feed.prependPost} />}
+      <DiscoverPeople />
     </main>
   );
 }

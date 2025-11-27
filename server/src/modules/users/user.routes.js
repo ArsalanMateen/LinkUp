@@ -13,6 +13,9 @@ router
     userCtrl.removeFollowing,
     userCtrl.removeFollower,
   );
+router
+  .route("/api/users/findpeople/:uId")
+  .get(authCtrl.requireSignin, userCtrl.findPeople);
 router.route("/api/users/:uId").get(authCtrl.optionalSignin, userCtrl.read);
 router.param("uId", userCtrl.userByID);
 export default router;
