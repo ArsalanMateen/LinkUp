@@ -12,5 +12,8 @@ router.route("/api/posts/by/:userId").get(postCtrl.listByUser);
 router
   .route("/api/posts/new/:userId")
   .post(authCtrl.requireSignin, postCtrl.create);
+router
+  .route("/api/posts/comment")
+  .put(authCtrl.requireSignin, postCtrl.comment);
 router.param("userId", userCtrl.userByID);
 export default router;

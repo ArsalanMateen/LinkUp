@@ -46,6 +46,14 @@ export const create = (params, credentials, post) =>
     validate: isRecord,
   });
 
+export const comment = (params, credentials, postId, comment) =>
+  request("/api/posts/comment/", {
+    method: "PUT",
+    token: credentials.t,
+    json: { userId: params.userId, postId, comment },
+    validate: isCommentsResponse,
+  });
+
 export const listComments = (postId, signal) =>
   request("/api/posts/" + encodeURIComponent(postId) + "/comments", {
     signal,

@@ -23,6 +23,28 @@ const create = (req, res) => {
   });
 };
 
+const comment = async (req, res) => {
+  const commentToAdd = req.body.comment;
+  commentToAdd.postedBy = req.body.userId;
+
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $push: { comments: commentToAdd } },
+      { new: true },
+    )
+      .select("comments")
+      .populate("comments.postedBy", "_id name photo")
+      .exec();
+
+    if (!updatedPost) return res.status(404).json({ error: "Post not found" });
+
+    return res.json({ comments: updatedPost.comments });
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const listByUser = async (req, res) => {
   try {
     return res.json(
@@ -89,4 +111,11 @@ const listComments = async (req, res) => {
   }
 };
 
-export default { create, listPublic, listByUser, listNewsFeed, listComments };
+export default {
+  create,
+  listPublic,
+  listByUser,
+  listNewsFeed,
+  listComments,
+  comment,
+};
