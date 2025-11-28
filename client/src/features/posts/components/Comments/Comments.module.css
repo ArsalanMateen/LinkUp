@@ -1,0 +1,39 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.content {
+  flex: 1;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1px solid #f1f5f9;
+}
+
+.authorName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.authorName:hover {
+  color: #5c60f5;
+  text-decoration: none;
+}
+
+.text {
+  font-size: 13px;
+  color: var(--color-text-body);
+  line-height: 1.5;
+  margin: 4px 0 6px 0;
+  word-break: break-word;
+}

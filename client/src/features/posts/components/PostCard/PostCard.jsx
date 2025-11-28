@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 import { Avatar, Card } from "../../../../shared/ui";
 import { getHandle, getTimeAgo } from "../../../../shared/utils/format";
 import styles from "./PostCard.module.css";
+import { useState } from "react";
+import usePostComments from "../../hooks/usePostComments";
+import Comments from "../Comments/Comments";
+import RequestState from "../../../../shared/ui/RequestState/RequestState";
 export default function PostCard({ post, onRemove }) {
+  const comments = usePostComments(post._id, post.commentCount || 0);
+  const [open, setOpen] = useState(false);
   return (
     <Card as="article" className={styles.root}>
       <header className={styles.header}>
@@ -24,6 +30,31 @@ export default function PostCard({ post, onRemove }) {
         </div>
       </header>
       <p className={styles.text}>{post.text}</p>
+      <button
+        onClick={() => {
+          comments.open();
+          setOpen(!open);
+        }}
+        className={styles.actionButton}
+      >
+        Comment ({comments.count})
+      </button>
+      {open && (
+        <>
+          <RequestState
+            loading={comments.loading}
+            error={comments.error}
+            onRetry={comments.retry}
+          />
+          {comments.loaded && (
+            <Comments
+              postId={post._id}
+              comments={comments.comments}
+              updateComments={comments.updateComments}
+            />
+          )}
+        </>
+      )}
     </Card>
   );
 }
