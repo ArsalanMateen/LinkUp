@@ -3,10 +3,11 @@ import useAction from "../../../../shared/hooks/useAction";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../auth/context/AuthProvider";
-import { comment } from "../../api/postsApi";
+import { comment, uncomment } from "../../api/postsApi";
 import { getHandle, getTimeAgo } from "../../../../shared/utils/format";
 import { Avatar, Button } from "../../../../shared/ui";
 import styles from "./Comments.module.css";
+import { DeleteOutline as DeleteOutlineIcon } from "../../../../shared/ui/Icons/Icons";
 
 export default function Comments({
   postId,
@@ -16,7 +17,9 @@ export default function Comments({
 }) {
   const auth = useAuth();
   const [text, setText] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
   const postAction = useAction();
+  const deleteAction = useAction();
 
   const isPosting = postAction.pending;
   const authSession = auth.session;
@@ -40,9 +43,30 @@ export default function Comments({
     });
   };
 
+  const handleDelete = (selected) => () => {
+    if (!authSession) return onAuthRequired?.("delete comments");
+
+    setDeletingId(selected._id);
+    deleteAction.run(async () => {
+      try {
+        const result = await uncomment(
+          { userId: currentUser._id },
+          { t: authSession.token },
+          postId,
+          selected,
+        );
+        updateComments(result.comments);
+      } finally {
+        setDeletingId(null);
+      }
+    });
+  };
+
   return (
     <div className={styles.root}>
-      {postAction.error && <p role="alert">{postAction.error}</p>}
+      {(postAction.error || deleteAction.error) && (
+        <p role="alert">{postAction.error || deleteAction.error}</p>
+      )}
       <div className={styles.inputRow}>
         <Avatar user={currentUser} size="sm" />
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -87,12 +111,15 @@ export default function Comments({
             const commentAuthor = isAuthor
               ? {
                   ...comment.postedBy,
-                  photo: currentUser.photo ?? comment.postedBy?.photo,
+                  photo: currentUser.photo ?? comment.postedBy?.photo
                 }
               : comment.postedBy;
 
             return (
-              <div key={comment._id || index} className={styles.item}>
+              <div
+                key={comment._id || index}
+                className={styles.item}
+              >
                 <Avatar user={commentAuthor} size="sm" />
                 <div className={styles.content}>
                   <div className={styles.header}>
@@ -116,6 +143,19 @@ export default function Comments({
                         {getHandle(comment.postedBy)}
                       </span>
                     </div>
+
+                    {isAuthor && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={deletingId === comment._id}
+                        onClick={handleDelete(comment)}
+                        title="Delete comment"
+                        aria-label="Delete comment"
+                      >
+                        <DeleteOutlineIcon style={{ fontSize: 16 }} />
+                      </Button>
+                    )}
                   </div>
 
                   <p className={styles.text}>{comment.text}</p>

@@ -15,5 +15,8 @@ router
 router
   .route("/api/posts/comment")
   .put(authCtrl.requireSignin, postCtrl.comment);
+router
+  .route("/api/posts/uncomment")
+  .put(authCtrl.requireSignin, postCtrl.uncomment);
 router.param("userId", userCtrl.userByID);
 export default router;
