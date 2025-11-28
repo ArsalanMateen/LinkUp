@@ -68,4 +68,25 @@ const listPublic = async (req, res) => {
   }
 };
 
-export default { create, listPublic, listByUser, listNewsFeed };
+const listComments = async (req, res) => {
+  const { postId } = req.params;
+
+  if (!/^[a-f\d]{24}$/i.test(postId))
+    return res.status(400).json({ error: "Invalid post ID" });
+
+  try {
+    const post = await Post.findById(postId)
+      .select("comments -_id")
+      .populate("comments.postedBy", "_id name photo")
+      .lean()
+      .exec();
+
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    return res.json({ comments: post.comments || [] });
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve comments" });
+  }
+};
+
+export default { create, listPublic, listByUser, listNewsFeed, listComments };

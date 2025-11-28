@@ -4,6 +4,7 @@ import authCtrl from "../auth/auth.controller.js";
 import userCtrl from "../users/user.controller.js";
 const router = express.Router();
 router.route("/api/posts/public").get(postCtrl.listPublic);
+router.route("/api/posts/:postId/comments").get(postCtrl.listComments);
 router
   .route("/api/posts/feed/:userId")
   .get(authCtrl.requireSignin, postCtrl.listNewsFeed);
