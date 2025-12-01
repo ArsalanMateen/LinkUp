@@ -7,5 +7,8 @@ export const listPostSummaries = async (query, sort, limit, actor) => {
     .populate("postedBy", "_id name photo")
     .lean()
     .exec();
-  return posts;
+  return posts.map(({ comments, likes, ...post }) => ({
+    ...post,
+    commentCount: comments?.length || 0,
+  }));
 };
