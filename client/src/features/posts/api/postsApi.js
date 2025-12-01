@@ -60,6 +60,14 @@ export const like = (params, credentials, postId) =>
     validate: isLikesResponse,
   });
 
+export const unlike = (params, credentials, postId) =>
+  request("/api/posts/unlike/", {
+    method: "PUT",
+    token: credentials.t,
+    json: { postId },
+    validate: isLikesResponse,
+  });
+
 export const comment = (params, credentials, postId, comment) =>
   request("/api/posts/comment/", {
     method: "PUT",

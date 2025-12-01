@@ -41,6 +41,24 @@ const like = async (req, res) => {
   }
 };
 
+const unlike = async (req, res) => {
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $pull: { likes: req.auth._id } },
+      { new: true },
+    )
+      .select("likes")
+      .exec();
+
+    if (!updatedPost) return res.status(404).json({ error: "Post not found" });
+
+    return res.json(summarizeLikes(updatedPost.likes, req.auth._id));
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const comment = async (req, res) => {
   const commentToAdd = req.body.comment;
   commentToAdd.postedBy = req.body.userId;
@@ -159,4 +177,5 @@ export default {
   comment,
   uncomment,
   like,
+  unlike,
 };
