@@ -1,5 +1,11 @@
 import { request, isRecord, isList } from "../../../shared/api/client.js";
 
+const isLikesResponse = (data) =>
+  Number.isSafeInteger(data.likesCount) &&
+  data.likesCount >= 0 &&
+  typeof data.likedByMe === "boolean" &&
+  !Object.hasOwn(data, "likes");
+
 const isCommentsResponse = (data) =>
   isList(data.comments) &&
   data.comments.every((comment) => {
@@ -44,6 +50,14 @@ export const create = (params, credentials, post) =>
     token: credentials.t,
     body: post,
     validate: isRecord,
+  });
+
+export const like = (params, credentials, postId) =>
+  request("/api/posts/like/", {
+    method: "PUT",
+    token: credentials.t,
+    json: { postId },
+    validate: isLikesResponse,
   });
 
 export const comment = (params, credentials, postId, comment) =>

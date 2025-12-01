@@ -2,7 +2,7 @@ import Post from "./post.model.js";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
 import formidable from "formidable";
 
-import { listPostSummaries } from "./postLists.js";
+import { listPostSummaries, summarizeLikes } from "./postLists.js";
 
 const create = (req, res) => {
   const form = new formidable.IncomingForm();
@@ -21,6 +21,24 @@ const create = (req, res) => {
       return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
     }
   });
+};
+
+const like = async (req, res) => {
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $addToSet: { likes: req.auth._id } },
+      { new: true },
+    )
+      .select("likes")
+      .exec();
+
+    if (!updatedPost) return res.status(404).json({ error: "Post not found" });
+
+    return res.json(summarizeLikes(updatedPost.likes, req.auth._id));
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
 };
 
 const comment = async (req, res) => {
@@ -140,4 +158,5 @@ export default {
   listComments,
   comment,
   uncomment,
+  like,
 };
