@@ -2,7 +2,7 @@ import Post from "./post.model.js";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
 import formidable from "formidable";
 
-import { listPostSummaries } from "./postLists.js";
+import { listPostSummaries, summarizeLikes } from "./postLists.js";
 
 const create = (req, res) => {
   const form = new formidable.IncomingForm();
@@ -12,15 +12,55 @@ const create = (req, res) => {
       const post = new Post({ ...fields, postedBy: req.profile._id });
       await post.save();
       return res.json(
-        await Post.findById(post._id)
-          .populate("postedBy", "_id name")
-          .lean()
-          .exec(),
+        (
+          await listPostSummaries(
+            { _id: post._id },
+            { created: -1 },
+            1,
+            req.auth._id,
+          )
+        )[0],
       );
     } catch (err) {
       return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
     }
   });
+};
+
+const like = async (req, res) => {
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $addToSet: { likes: req.auth._id } },
+      { new: true },
+    )
+      .select("likes")
+      .exec();
+
+    if (!updatedPost) return res.status(404).json({ error: "Post not found" });
+
+    return res.json(summarizeLikes(updatedPost.likes, req.auth._id));
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+const unlike = async (req, res) => {
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $pull: { likes: req.auth._id } },
+      { new: true },
+    )
+      .select("likes")
+      .exec();
+
+    if (!updatedPost) return res.status(404).json({ error: "Post not found" });
+
+    return res.json(summarizeLikes(updatedPost.likes, req.auth._id));
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
 };
 
 const comment = async (req, res) => {
@@ -140,4 +180,6 @@ export default {
   listComments,
   comment,
   uncomment,
+  like,
+  unlike,
 };

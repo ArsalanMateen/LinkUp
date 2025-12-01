@@ -7,9 +7,30 @@ import { useState } from "react";
 import usePostComments from "../../hooks/usePostComments";
 import Comments from "../Comments/Comments";
 import RequestState from "../../../../shared/ui/RequestState/RequestState";
+import { useAuth } from "../../../auth/context/AuthProvider";
+import useAction from "../../../../shared/hooks/useAction";
+import { like, unlike } from "../../api/postsApi";
 export default function PostCard({ post, onRemove }) {
   const comments = usePostComments(post._id, post.commentCount || 0);
   const [open, setOpen] = useState(false);
+  const { session } = useAuth();
+  const action = useAction();
+  const [likes, setLikes] = useState({
+    likesCount: post.likesCount || 0,
+    likedByMe: post.likedByMe || false,
+  });
+  const toggle = () => {
+    if (!session) return;
+    action.run(async () =>
+      setLikes(
+        await (likes.likedByMe ? unlike : like)(
+          { userId: session.user._id },
+          { t: session.token },
+          post._id,
+        ),
+      ),
+    );
+  };
   return (
     <Card as="article" className={styles.root}>
       <header className={styles.header}>
@@ -55,6 +76,15 @@ export default function PostCard({ post, onRemove }) {
           )}
         </>
       )}
+      <button
+        onClick={toggle}
+        disabled={action.pending}
+        aria-pressed={likes.likedByMe}
+        className={styles.actionButton}
+      >
+        Like ({likes.likesCount})
+      </button>
+      {action.error && <p role="alert">{action.error}</p>}
     </Card>
   );
 }
