@@ -12,10 +12,14 @@ const create = (req, res) => {
       const post = new Post({ ...fields, postedBy: req.profile._id });
       await post.save();
       return res.json(
-        await Post.findById(post._id)
-          .populate("postedBy", "_id name")
-          .lean()
-          .exec(),
+        (
+          await listPostSummaries(
+            { _id: post._id },
+            { created: -1 },
+            1,
+            req.auth._id,
+          )
+        )[0],
       );
     } catch (err) {
       return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
