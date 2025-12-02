@@ -60,6 +60,13 @@ export const create = (params, credentials, post) =>
     validate: isPostSummary,
   });
 
+export const remove = (params, credentials) =>
+  request("/api/posts/" + params.postId, {
+    method: "DELETE",
+    token: credentials.t,
+    validate: isRecord,
+  });
+
 const interaction = (action, params, credentials, postId, comment) =>
   request("/api/posts/" + action + "/", {
     method: "PUT",

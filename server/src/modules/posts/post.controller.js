@@ -27,6 +27,22 @@ const create = (req, res) => {
   });
 };
 
+const postByID = async (req, res, next, id) => {
+  try {
+    const post = await Post.findById(id)
+      .select("-comments")
+      .populate("postedBy", "_id name photo")
+      .exec();
+
+    if (!post) return res.status(400).json({ error: "Post not found" });
+
+    req.post = post;
+    next();
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve post" });
+  }
+};
+
 const like = async (req, res) => {
   try {
     const updatedPost = await Post.findByIdAndUpdate(
@@ -106,6 +122,33 @@ const uncomment = async (req, res) => {
   }
 };
 
+const remove = async (req, res) => {
+  try {
+    const deletedPost = req.post;
+
+    if (typeof deletedPost.deleteOne === "function") {
+      await deletedPost.deleteOne();
+    } else {
+      await deletedPost.remove();
+    }
+    return res.json(deletedPost);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
+const isPoster = (req, res, next) => {
+  const isPostAuthor =
+    req.post &&
+    req.auth &&
+    req.post.postedBy._id.toString() === req.auth._id.toString();
+
+  if (!isPostAuthor)
+    return res.status(403).json({ error: "User is not authorized" });
+
+  next();
+};
+
 const listByUser = async (req, res) => {
   try {
     return res.json(
@@ -182,4 +225,7 @@ export default {
   uncomment,
   like,
   unlike,
+  postByID,
+  isPoster,
+  remove,
 };
