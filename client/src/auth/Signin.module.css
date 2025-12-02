@@ -1,0 +1,156 @@
+.signin {
+  max-width: 440px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.signin__card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  text-align: center;
+}
+
+.signin__logo {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  object-fit: contain;
+}
+
+.signin__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.signin__subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.signin__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.signin__input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signin__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.signin__input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.signin__input:focus {
+  border-color: #5c60f5;
+  box-shadow: 0 0 0 3px rgba(92, 96, 245, 0.12);
+}
+
+.signin__error {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #ef4444;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.signin__submit-btn {
+  margin-top: 8px;
+  padding: 11px;
+  border-radius: 10px;
+  background-color: #5c60f5;
+  color: #ffffff;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(92, 96, 245, 0.35);
+  transition: all 0.15s ease;
+}
+
+.signin__submit-btn:hover {
+  background-color: #4e52e2;
+}
+
+.signin__footer {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+
+.signin__link {
+  color: #5c60f5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.signin__link:hover {
+  text-decoration: underline;
+}
+
+.signin__divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0 16px;
+  gap: 12px;
+}
+
+.signin__divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: #e2e8f0;
+}
+
+.signin__divider-text {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: lowercase;
+}
+
+.signin__demo {
+  margin-top: 4px;
+  text-align: center;
+}
+
+.signin__demo-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #5c60f5;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.signin__demo-btn:hover {
+  color: #4338ca;
+}
