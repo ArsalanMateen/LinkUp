@@ -10,6 +10,7 @@ import RequestState from "../../../../shared/ui/RequestState/RequestState";
 import { useAuth } from "../../../auth/context/AuthProvider";
 import useAction from "../../../../shared/hooks/useAction";
 import { like, unlike } from "../../api/postsApi";
+import { remove } from "../../api/postsApi";
 export default function PostCard({ post, onRemove }) {
   const comments = usePostComments(post._id, post.commentCount || 0);
   const [open, setOpen] = useState(false);
@@ -31,6 +32,11 @@ export default function PostCard({ post, onRemove }) {
       ),
     );
   };
+  const deletePost = () =>
+    action.run(async () => {
+      await remove({ postId: post._id }, { t: session.token });
+      onRemove(post);
+    });
   return (
     <Card as="article" className={styles.root}>
       <header className={styles.header}>
@@ -85,6 +91,15 @@ export default function PostCard({ post, onRemove }) {
         Like ({likes.likesCount})
       </button>
       {action.error && <p role="alert">{action.error}</p>}
+      {session?.user._id === post.postedBy?._id && (
+        <button
+          onClick={deletePost}
+          disabled={action.pending}
+          className={styles.deleteButton}
+        >
+          Delete Post
+        </button>
+      )}
     </Card>
   );
 }
