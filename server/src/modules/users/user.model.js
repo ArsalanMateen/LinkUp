@@ -25,6 +25,11 @@ const UserSchema = new mongoose.Schema({
   salt: String,
   following: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
   followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+  about: {
+    type: String,
+    trim: true,
+  },
+  updated: Date,
 });
 UserSchema.virtual("password")
   .set(function (password) {

@@ -17,6 +17,14 @@ export const read = (params, credentials, signal) =>
     validate: isRecord,
   });
 
+export const update = (params, credentials, user) =>
+  request("/api/users/" + params.userId, {
+    method: "PUT",
+    token: credentials.t,
+    body: user,
+    validate: isRecord,
+  });
+
 export const follow = (params, credentials, followId) =>
   request("/api/users/follow/", {
     method: "PUT",
