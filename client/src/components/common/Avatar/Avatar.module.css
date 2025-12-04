@@ -1,0 +1,36 @@
+.avatar {
+  border-radius: var(--radius-avatar);
+  object-fit: cover;
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-avatar);
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.avatar--xs {
+  width: 28px;
+  height: 28px;
+}
+
+.avatar--sm {
+  width: 34px;
+  height: 34px;
+}
+
+.avatar--md {
+  width: 44px;
+  height: 44px;
+}
+
+.avatar--lg {
+  width: 64px;
+  height: 64px;
+  border-width: 2px;
+}
+
+.avatar--xl {
+  width: 84px;
+  height: 84px;
+  border-width: 2px;
+}
