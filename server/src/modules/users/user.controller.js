@@ -1,6 +1,9 @@
 import User from "./user.model.js";
-
+import lodash from "lodash";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
+import formidable from "formidable";
+
+const { extend } = lodash;
 
 const create = async (req, res) => {
   const user = new User(req.body);
@@ -39,6 +42,12 @@ const userByID = async (req, res, next, id) => {
   }
 };
 
+const populateRelationships = (user) =>
+  user
+    .populate("following", "_id name photo")
+    .populate("followers", "_id name photo")
+    .execPopulate();
+
 const publicProfile = (user, actorId) => {
   const fields = [
     "_id",
@@ -64,6 +73,37 @@ const publicProfile = (user, actorId) => {
 };
 
 const read = (req, res) => res.json(publicProfile(req.profile, req.auth?._id));
+
+const update = async (req, res) => {
+  // Account mutation responses historically include populated relationships.
+  // Load them here, after authorization, while retaining the document methods.
+  try {
+    await populateRelationships(req.profile);
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve user" });
+  }
+
+  const uploadForm = new formidable.IncomingForm();
+  uploadForm.keepExtensions = true;
+  uploadForm.parse(req, async (err, fields, uploadedFiles) => {
+    if (err)
+      return res.status(400).json({ error: "Photo could not be uploaded" });
+
+    let user = extend(req.profile, fields);
+    user.updated = Date.now();
+
+    try {
+      await user.save();
+      user.hashed_password = undefined;
+      user.salt = undefined;
+      return res.json(user);
+    } catch (saveError) {
+      return res
+        .status(400)
+        .json({ error: errorHandler.getErrorMessage(saveError) });
+    }
+  });
+};
 
 const addFollowing = async (req, res, next) => {
   try {
@@ -142,4 +182,5 @@ export default {
   removeFollowing,
   removeFollower,
   findPeople,
+  update,
 };

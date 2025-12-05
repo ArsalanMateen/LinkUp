@@ -16,6 +16,9 @@ router
 router
   .route("/api/users/findpeople/:uId")
   .get(authCtrl.requireSignin, userCtrl.findPeople);
-router.route("/api/users/:uId").get(authCtrl.optionalSignin, userCtrl.read);
+router
+  .route("/api/users/:uId")
+  .get(authCtrl.optionalSignin, userCtrl.read)
+  .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update);
 router.param("uId", userCtrl.userByID);
 export default router;
