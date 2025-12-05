@@ -61,6 +61,25 @@ export default function EditProfileForm({
           value={values.about}
           onChange={change("about")}
         />
+        {includeCredentials && (
+          <>
+            <label htmlFor="profile-email">Email</label>
+            <input
+              id="profile-email"
+              type="email"
+              required
+              value={values.email}
+              onChange={change("email")}
+            />
+            <label htmlFor="profile-password">Password (optional)</label>
+            <input
+              id="profile-password"
+              type="password"
+              value={values.password}
+              onChange={change("password")}
+            />
+          </>
+        )}
         {action.error && (
           <p role="alert" className={styles.error}>
             {action.error}

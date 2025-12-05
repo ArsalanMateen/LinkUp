@@ -1,3 +1,24 @@
+.page {
+  max-width: 580px;
+  margin: 40px auto;
+  padding: 0 20px 48px;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 20px 0;
+}
+
 .form {
   display: flex;
   flex-direction: column;
