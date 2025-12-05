@@ -7,12 +7,16 @@ import useProfilePosts from "../../../posts/hooks/useProfilePosts";
 import PostList from "../../../posts/components/PostList/PostList";
 import useFollowActions from "../../hooks/useFollowActions";
 import { useAuth } from "../../../auth/context/AuthProvider";
+import { useState } from "react";
+import AboutWidget from "../../components/AboutWidget/AboutWidget";
+import EditProfileModal from "../../components/EditProfileModal/EditProfileModal";
 export default function Profile({ match }) {
   const profile = useProfile(match.params.userId);
   const user = profile.data?.user;
   const posts = useProfilePosts(match.params.userId);
   const { session } = useAuth();
   const follow = useFollowActions(profile, () => {});
+  const [editing, setEditing] = useState(false);
   return (
     <main className={styles.page}>
       {user && (
@@ -38,6 +42,26 @@ export default function Profile({ match }) {
         onRetry={posts.refresh}
         onRemove={posts.removePost}
       />
+      {user && (
+        <AboutWidget
+          user={user}
+          isOwner={user._id === session?.user._id}
+          onOpenEdit={() => setEditing(true)}
+        />
+      )}
+      {editing && user?._id === session?.user._id && (
+        <EditProfileModal
+          isOpen
+          user={user}
+          onClose={() => setEditing(false)}
+          onProfileUpdated={(saved) =>
+            profile.setData((previous) => ({
+              ...previous,
+              user: { ...previous.user, ...saved },
+            }))
+          }
+        />
+      )}
     </main>
   );
 }

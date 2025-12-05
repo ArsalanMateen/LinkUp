@@ -51,9 +51,22 @@ export const ExitToApp = (props) => (
   </Icon>
 );
 
+export const MailOutline = (props) => (
+  <Icon {...props}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m3 6 9 7 9-7" />
+  </Icon>
+);
+
 export const DeleteOutline = (props) => (
   <Icon {...props}>
     <path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" />
+  </Icon>
+);
+
+export const Close = (props) => (
+  <Icon {...props}>
+    <path d="m6 6 12 12M6 18 18 6" />
   </Icon>
 );
 
