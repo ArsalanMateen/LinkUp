@@ -58,6 +58,14 @@ export const MailOutline = (props) => (
   </Icon>
 );
 
+export const MoreHoriz = (props) => (
+  <Icon {...props}>
+    <circle cx="5" cy="12" r="1" />
+    <circle cx="12" cy="12" r="1" />
+    <circle cx="19" cy="12" r="1" />
+  </Icon>
+);
+
 export const DeleteOutline = (props) => (
   <Icon {...props}>
     <path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" />
@@ -75,6 +83,27 @@ export const ImageOutlined = (props) => (
 export const Close = (props) => (
   <Icon {...props}>
     <path d="m6 6 12 12M6 18 18 6" />
+  </Icon>
+);
+
+export const Favorite = (props) => (
+  <Icon {...props}>
+    <path
+      fill="currentColor"
+      d="M12 21 3.5 12.5C-2 6 6 0 12 6c6-6 14 0 8.5 6.5Z"
+    />
+  </Icon>
+);
+
+export const ChatBubbleOutline = (props) => (
+  <Icon {...props}>
+    <path d="M21 4H3v14h4v4l5-4h9Z" />
+  </Icon>
+);
+
+export const ThumbUpAltOutlined = (props) => (
+  <Icon {...props}>
+    <path d="M8 10V21H3V10Zm0 0 5-8c3 0 3 3 1 7h6c1 0 2 1 1.5 3l-2 7c-.3 1-1 2-2 2H8" />
   </Icon>
 );
 
