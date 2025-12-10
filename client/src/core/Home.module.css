@@ -1,0 +1,136 @@
+.home {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+.home__feed-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.home__feed-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.home__feed-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0 0 2px 0;
+}
+
+.home__feed-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.home__empty-feed {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+.home__empty-feed-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.home__empty-feed-text {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.home__guest-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.home__guest-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.home__guest-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.home__guest-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.home__guest-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.home__guest-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.home__guest-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home__guest-btn--signin {
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5c60f5;
+  background-color: transparent;
+  border: 1.5px solid #5c60f5;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.home__guest-btn--signin:hover {
+  background-color: #eef2ff;
+  text-decoration: none;
+}
+
+.home__guest-btn--signup {
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #5c60f5;
+  border: 1.5px solid #5c60f5;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(92, 96, 245, 0.3);
+  transition: all 0.15s ease;
+}
+
+.home__guest-btn--signup:hover {
+  background-color: #4e52e2;
+  color: #ffffff;
+  text-decoration: none;
+}
