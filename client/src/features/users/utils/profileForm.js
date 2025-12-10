@@ -7,6 +7,7 @@ export function profileFormData(values, includeCredentials) {
     data.append("email", values.email.trim());
     if (values.password) data.append("password", values.password);
   }
+  if (values.photo) data.append("photo", values.photo);
 
   return data;
 }
