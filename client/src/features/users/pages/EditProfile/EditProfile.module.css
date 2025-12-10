@@ -19,10 +19,23 @@
   margin: 0 0 20px 0;
 }
 
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .label {

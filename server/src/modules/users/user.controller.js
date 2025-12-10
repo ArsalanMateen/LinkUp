@@ -2,6 +2,7 @@ import User from "./user.model.js";
 import lodash from "lodash";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
 import formidable from "formidable";
+import { uploadToR2, deleteFromR2 } from "../../shared/storage/r2.js";
 
 const { extend } = lodash;
 
@@ -92,6 +93,25 @@ const update = async (req, res) => {
     let user = extend(req.profile, fields);
     user.updated = Date.now();
 
+    if (uploadedFiles.photo) {
+      try {
+        if (user.photo && user.photo.key) {
+          await deleteFromR2(user.photo.key).catch(console.error);
+        }
+
+        const { url, key } = await uploadToR2(
+          uploadedFiles.photo.path,
+          uploadedFiles.photo.type,
+          "avatars",
+        );
+        user.photo = { url, key };
+      } catch {
+        return res
+          .status(400)
+          .json({ error: "Failed to upload image to cloud storage" });
+      }
+    }
+
     try {
       await user.save();
       user.hashed_password = undefined;
@@ -103,6 +123,20 @@ const update = async (req, res) => {
         .json({ error: errorHandler.getErrorMessage(saveError) });
     }
   });
+};
+
+const photo = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select("photo").lean();
+
+    if (user?.photo?.url) {
+      return res.redirect(302, user.photo.url);
+    }
+
+    return res.status(404).end();
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve photo" });
+  }
 };
 
 const addFollowing = async (req, res, next) => {
@@ -183,4 +217,5 @@ export default {
   removeFollower,
   findPeople,
   update,
+  photo,
 };

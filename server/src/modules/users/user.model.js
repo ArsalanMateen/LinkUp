@@ -14,23 +14,28 @@ const UserSchema = new mongoose.Schema({
     match: [/.+\@.+\..+/, "Please fill a valid email address"],
     required: "Email is required",
   },
-  created: {
-    type: Date,
-    default: Date.now,
-  },
   hashed_password: {
     type: String,
     required: "Password is required",
   },
   salt: String,
-  following: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
-  followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+  updated: Date,
+  created: {
+    type: Date,
+    default: Date.now,
+  },
   about: {
     type: String,
     trim: true,
   },
-  updated: Date,
+  photo: {
+    url: String,
+    key: String,
+  },
+  following: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+  followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
 });
+
 UserSchema.virtual("password")
   .set(function (password) {
     this._password = password;
@@ -40,6 +45,7 @@ UserSchema.virtual("password")
   .get(function () {
     return this._password;
   });
+
 UserSchema.path("hashed_password").validate(function (v) {
   if (this._password && this._password.length < 6) {
     this.invalidate("password", "Password must be at least 6 characters.");
@@ -48,6 +54,7 @@ UserSchema.path("hashed_password").validate(function (v) {
     this.invalidate("password", "Password is required");
   }
 }, null);
+
 UserSchema.methods = {
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
@@ -68,4 +75,5 @@ UserSchema.methods = {
     return Math.round(new Date().valueOf() * Math.random()) + "";
   },
 };
+
 export default mongoose.model("User", UserSchema);

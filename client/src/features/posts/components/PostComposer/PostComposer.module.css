@@ -12,6 +12,10 @@
   gap: 14px;
 }
 
+.inputWrap {
+  flex: 1;
+}
+
 .textarea {
   width: 100%;
   min-height: 60px;
@@ -38,6 +42,43 @@
   color: var(--color-text-subtle);
 }
 
+.preview {
+  margin-top: 12px;
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.previewImage {
+  max-height: 180px;
+  max-width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  object-fit: cover;
+}
+
+.removeImageButton {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background-color: rgba(15, 23, 42, 0.7);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.15s;
+}
+
+.removeImageButton:hover {
+  background-color: rgba(239, 68, 68, 0.9);
+}
+
 .bottom {
   display: flex;
   align-items: center;
@@ -45,6 +86,36 @@
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid #f1f5f9;
+}
+
+.fileInput {
+  display: none;
+}
+
+.addImageButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.addImageButton:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.imageIcon {
+  font-size: 18px;
+  color: #64748b;
 }
 
 .error {

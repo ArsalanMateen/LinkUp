@@ -18,6 +18,10 @@ const PostSchema = new mongoose.Schema({
     },
   ],
   likes: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+  photo: {
+    url: String,
+    key: String,
+  },
 });
 
 export default mongoose.model("Post", PostSchema);

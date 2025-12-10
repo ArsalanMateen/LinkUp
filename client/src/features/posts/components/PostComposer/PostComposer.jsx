@@ -1,52 +1,149 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import useAction from "../../../../shared/hooks/useAction";
+import PropTypes from "prop-types";
 import { useAuth } from "../../../auth/context/AuthProvider";
 import { create } from "../../api/postsApi";
-import useAction from "../../../../shared/hooks/useAction";
 import { Avatar, Button, Card } from "../../../../shared/ui";
 import styles from "./PostComposer.module.css";
+import { ImageOutlined as ImageOutlinedIcon } from "../../../../shared/ui/Icons/Icons";
+import { Close as CloseIcon } from "../../../../shared/ui/Icons/Icons";
+
 export default function PostComposer({ onPostCreated }) {
-  const { session } = useAuth();
+  const auth = useAuth();
   const [text, setText] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
   const action = useAction();
-  const submit = (event) => {
+
+  const { error, pending: submitting } = action;
+
+  const fileInputRef = useRef(null);
+
+  const authSession = auth.session;
+  const currentUser = authSession ? authSession.user : {};
+  const firstName =
+    currentUser && currentUser.name ? currentUser.name.split(" ")[0] : "there";
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPhoto(file);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhoto(null);
+    setPreviewUrl("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  useEffect(() => {
+    if (!photo) {
+      setPreviewUrl("");
+      return;
+    }
+
+    const url = URL.createObjectURL(photo);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
+
+  const handleSubmit = (event) => {
     event.preventDefault();
+
     if (!text.trim()) return;
+
     action.run(async () => {
-      if (!session) throw new Error("Please sign in to create a post.");
-      const body = new FormData();
-      body.append("text", text.trim());
+      if (!authSession) throw new Error("Please sign in to create a post.");
+
+      const data = new FormData();
+      data.append("text", text.trim());
+
+      if (photo) data.append("photo", photo);
+
       const post = await create(
-        { userId: session.user._id },
-        { t: session.token },
-        body,
+        { userId: currentUser._id },
+        { t: authSession.token },
+        data,
       );
       setText("");
+      handleRemovePhoto();
       onPostCreated(post);
     });
   };
+
   return (
-    <Card className={styles.root}>
-      <form onSubmit={submit}>
+    <Card padding="md" className={styles.root}>
+      <form onSubmit={handleSubmit}>
         <div className={styles.top}>
-          <Avatar user={session?.user} />
-          <textarea
-            aria-label="Post text"
-            className={styles.textarea}
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            disabled={action.pending}
-          />
+          <Avatar user={currentUser} size="md" />
+          <div className={styles.inputWrap}>
+            <textarea
+              aria-label="Post text"
+              disabled={submitting}
+              className={styles.textarea}
+              placeholder={`What's on your mind, ${firstName}?`}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={2}
+            />
+
+            {previewUrl && (
+              <div className={styles.preview}>
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className={styles.previewImage}
+                />
+                <button
+                  type="button"
+                  className={styles.removeImageButton}
+                  disabled={submitting}
+                  onClick={handleRemovePhoto}
+                  aria-label="Remove image"
+                >
+                  <CloseIcon style={{ fontSize: 16 }} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        {action.error && (
-          <p role="alert" className={styles.error}>
-            {action.error}
-          </p>
+
+        {error && (
+          <div role="alert" className={styles.error}>
+            {error}
+          </div>
         )}
+
         <div className={styles.bottom}>
+          <input
+            disabled={submitting}
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            onChange={handlePhotoChange}
+            className={styles.fileInput}
+            id="post-composer-file"
+          />
+          <label
+            htmlFor="post-composer-file"
+            className={styles.addImageButton}
+          >
+            <ImageOutlinedIcon className={styles.imageIcon} />
+            <span>{photo ? "Change image" : "Add an image"}</span>
+          </label>
+
           <Button
             type="submit"
-            disabled={!text.trim()}
-            loading={action.pending}
+            variant="primary"
+            size="md"
+            disabled={!text.trim() || submitting}
+            loading={submitting}
+            loadingText="Posting..."
           >
             Post
           </Button>
@@ -55,3 +152,7 @@ export default function PostComposer({ onPostCreated }) {
     </Card>
   );
 }
+
+PostComposer.propTypes = {
+  onPostCreated: PropTypes.func.isRequired,
+};
