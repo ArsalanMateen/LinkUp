@@ -2,27 +2,51 @@ import Post from "./post.model.js";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
 import formidable from "formidable";
 
+import { uploadToR2, deleteFromR2 } from "../../shared/storage/r2.js";
 import { listPostSummaries, summarizeLikes } from "./postLists.js";
 
 const create = (req, res) => {
-  const form = new formidable.IncomingForm();
-  form.parse(req, async (err, fields) => {
-    if (err) return res.status(400).json({ error: "Could not read post" });
+  const uploadForm = new formidable.IncomingForm();
+  uploadForm.keepExtensions = true;
+  uploadForm.parse(req, async (err, fields, uploadedFiles) => {
+    if (err)
+      return res.status(400).json({ error: "Image could not be uploaded" });
+
+    const post = new Post(fields);
+    post.postedBy = req.profile;
+
+    if (uploadedFiles.photo) {
+      try {
+        const { url, key } = await uploadToR2(
+          uploadedFiles.photo.path,
+          uploadedFiles.photo.type,
+          "posts",
+        );
+        post.photo = { url, key };
+      } catch {
+        return res
+          .status(400)
+          .json({ error: "Failed to upload image to cloud storage" });
+      }
+    }
+
     try {
-      const post = new Post({ ...fields, postedBy: req.profile._id });
-      await post.save();
-      return res.json(
-        (
-          await listPostSummaries(
-            { _id: post._id },
-            { created: -1 },
-            1,
-            req.auth._id,
-          )
-        )[0],
-      );
-    } catch (err) {
-      return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+      const savedPost = await post.save();
+      const populatedPost = await Post.findById(savedPost._id)
+        .select("-comments")
+        .populate("postedBy", "_id name photo")
+        .exec();
+      const { likes, ...postData } = populatedPost.toObject();
+
+      return res.json({
+        ...postData,
+        ...summarizeLikes(likes, req.auth._id),
+        commentCount: savedPost.comments.length,
+      });
+    } catch (saveError) {
+      return res
+        .status(400)
+        .json({ error: errorHandler.getErrorMessage(saveError) });
     }
   });
 };
@@ -40,6 +64,20 @@ const postByID = async (req, res, next, id) => {
     next();
   } catch {
     return res.status(400).json({ error: "Could not retrieve post" });
+  }
+};
+
+const photo = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.postId).select("photo").lean();
+
+    if (post?.photo?.url) {
+      return res.redirect(302, post.photo.url);
+    }
+
+    return res.status(404).end();
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve photo" });
   }
 };
 
@@ -131,6 +169,10 @@ const remove = async (req, res) => {
     } else {
       await deletedPost.remove();
     }
+    if (deletedPost.photo && deletedPost.photo.key) {
+      await deleteFromR2(deletedPost.photo.key).catch(console.error);
+    }
+
     return res.json(deletedPost);
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
@@ -228,4 +270,5 @@ export default {
   postByID,
   isPoster,
   remove,
+  photo,
 };
