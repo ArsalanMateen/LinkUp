@@ -57,6 +57,14 @@ export default function PostCard({ post, onRemove }) {
         </div>
       </header>
       <p className={styles.text}>{post.text}</p>
+      {post.photo && (
+        <img
+          src={post.photo.url || post.photo}
+          alt="Post attachment"
+          className={styles.image}
+          loading="lazy"
+        />
+      )}
       <button
         onClick={() => {
           comments.open();
