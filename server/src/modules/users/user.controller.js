@@ -139,6 +139,34 @@ const photo = async (req, res) => {
   }
 };
 
+const remove = async (req, res) => {
+  try {
+    await populateRelationships(req.profile);
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve user" });
+  }
+
+  try {
+    const deletedUser = req.profile;
+
+    if (typeof deletedUser.deleteOne === "function") {
+      await deletedUser.deleteOne();
+    } else {
+      await deletedUser.remove();
+    }
+    if (deletedUser.photo && deletedUser.photo.key) {
+      await deleteFromR2(deletedUser.photo.key).catch(console.error);
+    }
+
+    deletedUser.hashed_password = undefined;
+    deletedUser.salt = undefined;
+
+    return res.json(deletedUser);
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
+  }
+};
+
 const addFollowing = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.body.userId, {
@@ -218,4 +246,5 @@ export default {
   findPeople,
   update,
   photo,
+  remove,
 };

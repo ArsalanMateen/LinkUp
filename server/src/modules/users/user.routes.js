@@ -20,6 +20,7 @@ router
 router
   .route("/api/users/:uId")
   .get(authCtrl.optionalSignin, userCtrl.read)
-  .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update);
+  .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update)
+  .delete(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.remove);
 router.param("uId", userCtrl.userByID);
 export default router;

@@ -25,6 +25,13 @@ export const update = (params, credentials, user) =>
     validate: isRecord,
   });
 
+export const remove = (params, credentials) =>
+  request("/api/users/" + params.userId, {
+    method: "DELETE",
+    token: credentials.t,
+    validate: isRecord,
+  });
+
 export const follow = (params, credentials, followId) =>
   request("/api/users/follow/", {
     method: "PUT",
