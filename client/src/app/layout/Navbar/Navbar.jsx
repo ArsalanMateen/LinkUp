@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { lazy, Suspense, useState, useEffect, useRef } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { useAuth } from "../../../features/auth/context/AuthProvider";
 import { Avatar } from "../../../shared/ui";
@@ -7,9 +7,14 @@ import styles from "./Navbar.module.css";
 import { PersonOutline as PersonIcon } from "../../../shared/ui/Icons/Icons";
 import { ExitToApp as ExitToAppIcon } from "../../../shared/ui/Icons/Icons";
 import { KeyboardArrowDown as KeyboardArrowDownIcon } from "../../../shared/ui/Icons/Icons";
+import { DeleteOutline as DeleteOutlineIcon } from "../../../shared/ui/Icons/Icons";
+import RequestState from "../../../shared/ui/RequestState/RequestState";
+
+const DeleteAccountDialog = lazy(() => import("../../../features/users/components/DeleteAccountDialog/DeleteAccountDialog"));
 
 const Navbar = withRouter(({ history }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState(null);
   const auth = useAuth();
 
   const authSession = auth.session;
@@ -18,6 +23,7 @@ const Navbar = withRouter(({ history }) => {
 
   useEffect(() => {
     setDropdownOpen(false);
+    setDeleteUserId(null);
   }, [authSession?.user?._id]);
 
   useEffect(() => {
@@ -80,7 +86,9 @@ const Navbar = withRouter(({ history }) => {
                 aria-expanded={dropdownOpen}
               >
                 <Avatar user={authSession.user} size="sm" />
-                <span className={styles.userName}>{authSession.user.name}</span>
+                <span className={styles.userName}>
+                  {authSession.user.name}
+                </span>
                 <KeyboardArrowDownIcon
                   className={`${styles.chevron} ${dropdownOpen ? styles.chevronOpen : ""}`}
                 />
@@ -97,7 +105,17 @@ const Navbar = withRouter(({ history }) => {
                     <span>View Profile</span>
                   </Link>
                   <div className={styles.dropdownDivider} />
-
+                  <button
+                    type="button"
+                    className={`${styles.dropdownItem} ${styles.dropdownSignOut}`}
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setDeleteUserId(authSession.user._id);
+                    }}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                    <span>Delete Account</span>
+                  </button>
                   <button
                     type="button"
                     className={`${styles.dropdownItem} ${styles.dropdownSignOut}`}
@@ -121,6 +139,20 @@ const Navbar = withRouter(({ history }) => {
           )}
         </div>
       </div>
+      {hasValidSession && deleteUserId === authSession.user._id && (
+        <Suspense fallback={<RequestState loading />}>
+          <DeleteAccountDialog
+            key={deleteUserId}
+            isOpen
+            userId={deleteUserId}
+            onClose={() => setDeleteUserId(null)}
+            onDeleted={() => {
+              setDeleteUserId(null);
+              history.push("/");
+            }}
+          />
+        </Suspense>
+      )}
     </header>
   );
 });
