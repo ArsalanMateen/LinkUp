@@ -1,0 +1,63 @@
+.about-widget {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.about-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.about-widget__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.about-widget__edit-btn {
+  padding: 3px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.about-widget__edit-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.about-widget__bio {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #334155;
+  margin: 0 0 14px 0;
+  word-break: break-word;
+}
+
+.about-widget__contact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  padding-top: 12px;
+  border-top: 1px solid #f8fafc;
+}
+
+.about-widget__mail-icon {
+  font-size: 17px !important;
+  color: #94a3b8;
+}
