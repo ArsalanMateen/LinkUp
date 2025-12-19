@@ -27,6 +27,14 @@ export default function Home() {
       />
       {session && <PostComposer onPostCreated={feed.prependPost} />}
       <DiscoverPeople />
+      {session && (
+        <button
+          onClick={feed.loadMore}
+          disabled={feed.loadingMore || !feed.hasMore}
+        >
+          Load more
+        </button>
+      )}
     </main>
   );
 }

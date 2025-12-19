@@ -62,6 +62,12 @@ export default function Profile({ match }) {
           }
         />
       )}
+      <button
+        onClick={posts.loadMore}
+        disabled={posts.loadingMore || !posts.hasMore}
+      >
+        Load more
+      </button>
     </main>
   );
 }
