@@ -1,0 +1,90 @@
+.users-page {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 0 20px 48px;
+}
+
+.users-page__header {
+  margin-bottom: 24px;
+}
+
+.users-page__title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.users-page__subtitle {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.users-page__card {
+  overflow: hidden;
+}
+
+.users-page__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.users-page__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color var(--transition-fast);
+}
+
+.users-page__item:last-child {
+  border-bottom: none;
+}
+
+.users-page__item:hover {
+  background-color: var(--bg-hover);
+  text-decoration: none;
+}
+
+.users-page__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.users-page__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.users-page__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.users-page__handle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.users-page__view-btn {
+  padding: 6px 16px;
+  border-radius: var(--radius-btn);
+  border: 1.5px solid var(--color-primary);
+  background-color: transparent;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.users-page__item:hover .users-page__view-btn {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}

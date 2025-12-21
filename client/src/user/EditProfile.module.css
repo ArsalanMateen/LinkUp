@@ -1,0 +1,103 @@
+.edit-profile-page {
+  max-width: 580px;
+  margin: 40px auto;
+  padding: 0 20px 48px;
+}
+
+.edit-profile-page__card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.edit-profile-page__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 20px 0;
+}
+
+.edit-profile-page__avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.edit-profile-page__file-input {
+  display: none;
+}
+
+.edit-profile-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-profile-page__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-profile-page__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.edit-profile-page__input {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background-color: var(--bg-card);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.edit-profile-page__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.edit-profile-page__textarea {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background-color: var(--bg-card);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+  transition: all 0.15s ease;
+}
+
+.edit-profile-page__textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.edit-profile-page__error {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: var(--color-danger);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.edit-profile-page__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
