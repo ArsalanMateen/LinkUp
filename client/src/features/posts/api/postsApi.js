@@ -14,6 +14,14 @@ const isPostSummary = (post) =>
 
 const isPostList = (data) => Array.isArray(data) && data.every(isPostSummary);
 
+const isPostPage = (data) =>
+  isPostList(data.posts) &&
+  typeof data.hasMore === "boolean" &&
+  (data.nextCursor === null || typeof data.nextCursor === "string") &&
+  (data.hasMore
+    ? data.posts.length > 0 && Boolean(data.nextCursor)
+    : data.nextCursor === null);
+
 const isCommentsResponse = (data) =>
   isList(data.comments) &&
   data.comments.every((comment) => {
@@ -35,22 +43,32 @@ const isCommentsResponse = (data) =>
     );
   });
 
-export const listNewsFeed = (params, credentials, signal) =>
-  request("/api/posts/feed/" + params.userId, {
+export const listNewsFeed = (params, credentials, signal) => {
+  const query = new URLSearchParams({ limit: params.limit ?? 10 });
+
+  if (params.cursor != null) query.set("cursor", params.cursor);
+
+  return request("/api/posts/feed/" + params.userId + "?" + query.toString(), {
     token: credentials.t,
     signal,
-    validate: isList,
+    validate: isPostPage,
   });
+};
 
 export const listPublic = (signal) =>
   request("/api/posts/public", { signal, validate: isPostList });
 
-export const listByUser = (params, credentials, signal) =>
-  request("/api/posts/by/" + params.userId, {
-    signal,
+export const listByUser = (params, credentials, signal) => {
+  const query = new URLSearchParams({ limit: params.limit ?? 10 });
+
+  if (params.cursor != null) query.set("cursor", params.cursor);
+
+  return request("/api/posts/by/" + params.userId + "?" + query.toString(), {
     token: credentials?.t,
-    validate: isList,
+    signal,
+    validate: isPostPage,
   });
+};
 
 export const create = (params, credentials, post) =>
   request("/api/posts/new/" + params.userId, {

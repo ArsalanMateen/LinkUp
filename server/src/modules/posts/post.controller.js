@@ -1,9 +1,14 @@
 import Post from "./post.model.js";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
 import formidable from "formidable";
-
+import mongoose from "mongoose";
 import { uploadToR2, deleteFromR2 } from "../../shared/storage/r2.js";
 import { listPostSummaries, summarizeLikes } from "./postLists.js";
+import {
+  feedLimit,
+  encodeFeedCursor,
+  decodeFeedCursor,
+} from "./feedPagination.js";
 
 const create = (req, res) => {
   const uploadForm = new formidable.IncomingForm();
@@ -20,13 +25,11 @@ const create = (req, res) => {
         const { url, key } = await uploadToR2(
           uploadedFiles.photo.path,
           uploadedFiles.photo.type,
-          "posts",
+          "posts"
         );
         post.photo = { url, key };
       } catch {
-        return res
-          .status(400)
-          .json({ error: "Failed to upload image to cloud storage" });
+        return res.status(400).json({ error: "Failed to upload image to cloud storage" });
       }
     }
 
@@ -69,7 +72,9 @@ const postByID = async (req, res, next, id) => {
 
 const photo = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.postId).select("photo").lean();
+    const post = await Post.findById(req.params.postId)
+      .select("photo")
+      .lean();
 
     if (post?.photo?.url) {
       return res.redirect(302, post.photo.url);
@@ -87,9 +92,7 @@ const like = async (req, res) => {
       req.body.postId,
       { $addToSet: { likes: req.auth._id } },
       { new: true },
-    )
-      .select("likes")
-      .exec();
+    ).select("likes").exec();
 
     if (!updatedPost) return res.status(404).json({ error: "Post not found" });
 
@@ -105,9 +108,7 @@ const unlike = async (req, res) => {
       req.body.postId,
       { $pull: { likes: req.auth._id } },
       { new: true },
-    )
-      .select("likes")
-      .exec();
+    ).select("likes").exec();
 
     if (!updatedPost) return res.status(404).json({ error: "Post not found" });
 
@@ -192,31 +193,89 @@ const isPoster = (req, res, next) => {
 };
 
 const listByUser = async (req, res) => {
+  let limit, cursor;
+
   try {
-    return res.json(
-      await listPostSummaries(
-        { postedBy: req.profile._id },
-        { created: -1, _id: -1 },
-        10,
-        req.auth?._id,
-      ),
+    limit = feedLimit(req.query.limit);
+    if (req.query.cursor !== undefined)
+      cursor = decodeFeedCursor(req.query.cursor);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+
+  const query = { postedBy: mongoose.Types.ObjectId(req.profile._id) };
+
+  if (cursor) {
+    query.$or = [
+      { created: { $lt: cursor.created } },
+      { created: cursor.created, _id: { $lt: mongoose.Types.ObjectId(cursor.id) } },
+    ];
+  }
+
+  try {
+    const posts = await listPostSummaries(
+      query,
+      { created: -1, _id: -1 },
+      limit + 1,
+      req.auth?._id,
     );
+    const hasMore = posts.length > limit;
+    const pagePosts = hasMore ? posts.slice(0, limit) : posts;
+
+    return res.json({
+      posts: pagePosts,
+      nextCursor: hasMore
+        ? encodeFeedCursor(pagePosts[pagePosts.length - 1])
+        : null,
+      hasMore,
+    });
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
   }
 };
 
 const listNewsFeed = async (req, res) => {
-  const targets = [...(req.profile.following || []), req.profile._id];
+  let limit, cursor;
+
   try {
-    return res.json(
-      await listPostSummaries(
-        { postedBy: { $in: targets } },
-        { created: -1, _id: -1 },
-        10,
-        req.auth._id,
-      ),
+    limit = feedLimit(req.query.limit);
+    if (req.query.cursor !== undefined)
+      cursor = decodeFeedCursor(req.query.cursor);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+
+  const targetIds = (req.profile.following || []).map((u) => u._id || u);
+  targetIds.push(req.profile._id);
+  // Aggregation does not cast IDs automatically like Mongoose find queries do.
+  const query = {
+    postedBy: { $in: targetIds.map((id) => mongoose.Types.ObjectId(id)) },
+  };
+
+  if (cursor) {
+    query.$or = [
+      { created: { $lt: cursor.created } },
+      { created: cursor.created, _id: { $lt: mongoose.Types.ObjectId(cursor.id) } },
+    ];
+  }
+
+  try {
+    const posts = await listPostSummaries(
+      query,
+      { created: -1, _id: -1 },
+      limit + 1,
+      req.auth._id,
     );
+    const hasMore = posts.length > limit;
+    const pagePosts = hasMore ? posts.slice(0, limit) : posts;
+
+    return res.json({
+      posts: pagePosts,
+      nextCursor: hasMore
+        ? encodeFeedCursor(pagePosts[pagePosts.length - 1])
+        : null,
+      hasMore,
+    });
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
   }
@@ -224,12 +283,7 @@ const listNewsFeed = async (req, res) => {
 
 const listPublic = async (req, res) => {
   try {
-    const posts = await listPostSummaries(
-      {},
-      { created: -1 },
-      30,
-      req.auth?._id,
-    );
+    const posts = await listPostSummaries({}, { created: -1 }, 30, req.auth?._id);
     return res.json(posts);
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
@@ -259,16 +313,16 @@ const listComments = async (req, res) => {
 
 export default {
   create,
-  listPublic,
+  postByID,
   listByUser,
   listNewsFeed,
+  listPublic,
   listComments,
-  comment,
-  uncomment,
+  photo,
   like,
   unlike,
-  postByID,
-  isPoster,
+  comment,
+  uncomment,
   remove,
-  photo,
+  isPoster,
 };
