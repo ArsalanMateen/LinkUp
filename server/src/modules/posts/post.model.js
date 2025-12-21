@@ -5,11 +5,11 @@ const PostSchema = new mongoose.Schema({
     type: String,
     required: "Text is required",
   },
-  postedBy: { type: mongoose.Schema.ObjectId, ref: "User" },
-  created: {
-    type: Date,
-    default: Date.now,
+  photo: {
+    url: String,
+    key: String,
   },
+  likes: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
   comments: [
     {
       text: String,
@@ -17,11 +17,14 @@ const PostSchema = new mongoose.Schema({
       postedBy: { type: mongoose.Schema.ObjectId, ref: "User" },
     },
   ],
-  likes: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
-  photo: {
-    url: String,
-    key: String,
+  postedBy: { type: mongoose.Schema.ObjectId, ref: "User" },
+  created: {
+    type: Date,
+    default: Date.now,
   },
 });
+
+PostSchema.index({ postedBy: 1, created: -1, _id: -1 });
+PostSchema.index({ created: -1, _id: -1 });
 
 export default mongoose.model("Post", PostSchema);
