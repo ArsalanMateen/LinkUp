@@ -1,17 +1,16 @@
 import { signout } from "./api.js";
 import { validSession } from "./session.js";
-
 const notify = () => window.dispatchEvent(new Event("auth-session-changed"));
-
 const auth = {
   getToken() {
     if (typeof window === "undefined") return null;
     try {
+      sessionStorage.removeItem("jwt");
       const session = JSON.parse(localStorage.getItem("jwt") || "null");
-      return validSession(session) ? session : null;
-    } catch {
-      return null;
-    }
+      if (validSession(session)) return session;
+      localStorage.removeItem("jwt");
+    } catch {}
+    return null;
   },
   isAuthenticated() {
     return Boolean(auth.getToken());
@@ -19,7 +18,14 @@ const auth = {
   authenticate(session, callback) {
     if (!validSession(session))
       throw new Error("The server returned an invalid sign-in session.");
-    localStorage.setItem("jwt", JSON.stringify(session));
+    try {
+      localStorage.setItem("jwt", JSON.stringify(session));
+      sessionStorage.removeItem("jwt");
+    } catch {
+      throw new Error(
+        "Unable to save your session. Please allow browser storage and try again.",
+      );
+    }
     notify();
     callback?.();
   },
@@ -29,8 +35,14 @@ const auth = {
       auth.authenticate({ ...session, user: { ...session.user, ...user } });
   },
   clearLocal() {
-    localStorage.removeItem("jwt");
-    notify();
+    try {
+      localStorage.removeItem("jwt");
+      sessionStorage.removeItem("jwt");
+    } catch {
+      /* Storage may be disabled after the session was loaded. */
+    } finally {
+      notify();
+    }
   },
   clearJWT(callback) {
     auth.clearLocal();
@@ -38,5 +50,4 @@ const auth = {
     return signout().catch(() => undefined);
   },
 };
-
 export default auth;
