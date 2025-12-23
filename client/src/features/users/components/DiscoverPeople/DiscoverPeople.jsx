@@ -17,7 +17,7 @@ export default function DiscoverPeople() {
     async (signal) =>
       userId
         ? findPeople({ userId }, { t: token }, signal)
-        : (await list({ limit: 5 }, signal)).slice(0, 5),
+        : (await list({ limit: 5 }, signal)).users,
     [userId, token],
   );
 
@@ -54,8 +54,14 @@ export default function DiscoverPeople() {
                   <div className={styles.left}>
                     <Avatar user={user} size="md" />
                     <div className={styles.info}>
-                      <span className={styles.name}>{user.name}</span>
-                      <span className={styles.bio}>{bioText}</span>
+                      <span
+                        className={styles.name}
+                      >
+                        {user.name}
+                      </span>
+                      <span className={styles.bio}>
+                        {bioText}
+                      </span>
                     </div>
                   </div>
                 </Link>

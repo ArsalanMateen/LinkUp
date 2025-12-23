@@ -3,6 +3,12 @@ import lodash from "lodash";
 import errorHandler from "../../shared/errors/dbErrorHandler.js";
 import formidable from "formidable";
 import { uploadToR2, deleteFromR2 } from "../../shared/storage/r2.js";
+import mongoose from "mongoose";
+import {
+  usersLimit,
+  encodeUserCursor,
+  decodeUserCursor,
+} from "./userPagination.js";
 
 const { extend } = lodash;
 
@@ -18,15 +24,45 @@ const create = async (req, res) => {
 };
 
 const list = async (req, res) => {
+  let limit, cursor;
+
   try {
-    return res.json(
-      await User.find()
-        .select("_id name email created")
-        .sort({ created: -1, _id: -1 })
-        .limit(20)
-        .lean()
-        .exec(),
-    );
+    limit = usersLimit(req.query.limit);
+    if (req.query.cursor !== undefined)
+      cursor = decodeUserCursor(req.query.cursor);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+
+  const query = cursor
+    ? {
+        $or: [
+          { created: { $lt: cursor.created } },
+          {
+            created: cursor.created,
+            _id: { $lt: mongoose.Types.ObjectId(cursor.id) },
+          },
+        ],
+      }
+    : {};
+
+  try {
+    const users = await User.find(query)
+      .select("_id name email photo created")
+      .sort({ created: -1, _id: -1 })
+      .limit(limit + 1)
+      .lean()
+      .exec();
+    const hasMore = users.length > limit;
+    const pageUsers = hasMore ? users.slice(0, limit) : users;
+
+    return res.json({
+      users: pageUsers,
+      nextCursor: hasMore
+        ? encodeUserCursor(pageUsers[pageUsers.length - 1])
+        : null,
+      hasMore,
+    });
   } catch (err) {
     return res.status(400).json({ error: errorHandler.getErrorMessage(err) });
   }

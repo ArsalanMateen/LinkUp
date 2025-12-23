@@ -7,8 +7,22 @@ export const create = (user) =>
     validate: (data) => typeof data.message === "string",
   });
 
-export const list = (params = {}, signal) =>
-  request("/api/users", { signal, validate: isList });
+export const list = (params = {}, signal) => {
+  const query = new URLSearchParams({ limit: params.limit ?? 20 });
+
+  if (params.cursor != null) query.set("cursor", params.cursor);
+
+  return request("/api/users?" + query.toString(), {
+    signal,
+    validate: (data) =>
+      isList(data.users) &&
+      typeof data.hasMore === "boolean" &&
+      (data.nextCursor === null || typeof data.nextCursor === "string") &&
+      (data.hasMore
+        ? data.users.length > 0 && Boolean(data.nextCursor)
+        : data.nextCursor === null),
+  });
+};
 
 export const read = (params, credentials, signal) =>
   request("/api/users/" + params.userId, {

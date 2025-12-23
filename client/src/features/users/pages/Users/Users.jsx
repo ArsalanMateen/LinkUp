@@ -57,6 +57,21 @@ export default function Users() {
           inline
         />
         <RequestState loading={resource.loadingMore} inline />
+        <button
+          type="button"
+          onClick={resource.loadMore}
+          disabled={
+            !(
+              resource.hasMore &&
+              !resource.loading &&
+              !resource.loadingMore &&
+              !resource.error &&
+              !resource.loadMoreError
+            )
+          }
+        >
+          Load more
+        </button>
       </div>
     </div>
   );
