@@ -7,8 +7,13 @@ import mongoose from "mongoose";
 import {
   usersLimit,
   encodeUserCursor,
-  decodeUserCursor,
+  decodeUserCursor
 } from "./userPagination.js";
+import {
+  connectionsLimit,
+  encodeConnectionCursor,
+  decodeConnectionCursor
+} from "./connectionPagination.js";
 
 const { extend } = lodash;
 
@@ -28,8 +33,7 @@ const list = async (req, res) => {
 
   try {
     limit = usersLimit(req.query.limit);
-    if (req.query.cursor !== undefined)
-      cursor = decodeUserCursor(req.query.cursor);
+    if (req.query.cursor !== undefined) cursor = decodeUserCursor(req.query.cursor);
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }
@@ -38,11 +42,8 @@ const list = async (req, res) => {
     ? {
         $or: [
           { created: { $lt: cursor.created } },
-          {
-            created: cursor.created,
-            _id: { $lt: mongoose.Types.ObjectId(cursor.id) },
-          },
-        ],
+          { created: cursor.created, _id: { $lt: mongoose.Types.ObjectId(cursor.id) } },
+        ]
       }
     : {};
 
@@ -58,9 +59,7 @@ const list = async (req, res) => {
 
     return res.json({
       users: pageUsers,
-      nextCursor: hasMore
-        ? encodeUserCursor(pageUsers[pageUsers.length - 1])
-        : null,
+      nextCursor: hasMore ? encodeUserCursor(pageUsers[pageUsers.length - 1]) : null,
       hasMore,
     });
   } catch (err) {
@@ -86,30 +85,83 @@ const populateRelationships = (user) =>
     .execPopulate();
 
 const publicProfile = (user, actorId) => {
-  const fields = [
-    "_id",
-    "name",
-    "email",
-    "photo",
-    "about",
-    "created",
-    "updated",
-  ];
+  const fields = ["_id", "name", "email", "photo", "about", "created", "updated"];
 
   return {
     ...Object.fromEntries(fields.map((field) => [field, user[field]])),
     followersCount: (user.followers || []).length,
     followingCount: (user.following || []).length,
     followedByMe: Boolean(
-      actorId &&
-      (user.followers || []).some(
-        (id) => String(id?._id || id) === String(actorId),
-      ),
+      actorId && (user.followers || [])
+        .some((id) => String(id?._id || id) === String(actorId)),
     ),
   };
 };
 
 const read = (req, res) => res.json(publicProfile(req.profile, req.auth?._id));
+
+const listConnections = (type) => async (req, res) => {
+  const userId = req.params.connectionUserId;
+  let limit, cursor;
+
+  try {
+    if (typeof userId !== "string" || !/^[a-f\d]{24}$/i.test(userId))
+      throw new Error("Invalid user ID");
+    limit = connectionsLimit(req.query.limit);
+    if (req.query.cursor !== undefined) cursor = decodeConnectionCursor(req.query.cursor);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+
+  try {
+    // Deliberately bypass uId's shared document loader for these read-only paths.
+    const owner = await User.findById(userId).select(type).lean().exec();
+
+    if (!owner) return res.status(404).json({ error: "User not found" });
+
+    const query = {
+      _id: {
+        $in: owner[type] || [],
+        ...(cursor ? { $gt: mongoose.Types.ObjectId(cursor) } : {})
+      }
+    };
+    const users = await User.find(query)
+      .select("_id name photo")
+      .sort({ _id: 1 })
+      .limit(limit + 1)
+      .lean()
+      .exec();
+    const hasMore = users.length > limit;
+    const pageUsers = hasMore ? users.slice(0, limit) : users;
+    // Preserve follow-state metadata for API consumers on this bounded page;
+    // never return or hydrate the actor's full following array.
+    const followed =
+      req.auth?._id && pageUsers.length
+        ? await User.find({
+            _id: { $in: pageUsers.map((user) => user._id) },
+            followers: req.auth._id
+          })
+            .select("_id")
+            .lean()
+            .exec()
+        : [];
+    const followedIds = new Set(followed.map((user) => String(user._id)));
+
+    return res.json({
+      users: pageUsers.map((user) => ({
+        ...user,
+        followedByMe: followedIds.has(String(user._id))
+      })),
+      nextCursor: hasMore ? encodeConnectionCursor(pageUsers[pageUsers.length - 1]) : null,
+      hasMore,
+    });
+  } catch {
+    return res.status(400).json({ error: "Could not retrieve connections" });
+  }
+};
+
+const listFollowers = listConnections("followers");
+const listFollowing = listConnections("following");
 
 const update = async (req, res) => {
   // Account mutation responses historically include populated relationships.
@@ -138,13 +190,11 @@ const update = async (req, res) => {
         const { url, key } = await uploadToR2(
           uploadedFiles.photo.path,
           uploadedFiles.photo.type,
-          "avatars",
+          "avatars"
         );
         user.photo = { url, key };
       } catch {
-        return res
-          .status(400)
-          .json({ error: "Failed to upload image to cloud storage" });
+        return res.status(400).json({ error: "Failed to upload image to cloud storage" });
       }
     }
 
@@ -163,7 +213,9 @@ const update = async (req, res) => {
 
 const photo = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId).select("photo").lean();
+    const user = await User.findById(req.params.userId)
+      .select("photo")
+      .lean();
 
     if (user?.photo?.url) {
       return res.redirect(302, user.photo.url);
@@ -272,15 +324,17 @@ const findPeople = async (req, res) => {
 
 export default {
   create,
+  list,
   userByID,
   read,
-  list,
+  listFollowers,
+  listFollowing,
+  update,
+  photo,
+  remove,
   addFollowing,
   addFollower,
   removeFollowing,
   removeFollower,
   findPeople,
-  update,
-  photo,
-  remove,
 };

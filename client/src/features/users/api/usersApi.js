@@ -31,6 +31,20 @@ export const read = (params, credentials, signal) =>
     validate: isRecord,
   });
 
+export const listConnections = (params, credentials, signal) => {
+  const query = new URLSearchParams({ limit: params.limit ?? 20 });
+
+  if (params.cursor != null) query.set("cursor", params.cursor);
+
+  return request(`/api/users/${params.userId}/${params.type}?${query}`, {
+    token: credentials?.t,
+    signal,
+    validate: (data) => isList(data.users) && typeof data.hasMore === "boolean" &&
+      (data.hasMore ? data.users.length > 0 && typeof data.nextCursor === "string" &&
+        Boolean(data.nextCursor) : data.nextCursor === null),
+  });
+};
+
 export const update = (params, credentials, user) =>
   request("/api/users/" + params.userId, {
     method: "PUT",
