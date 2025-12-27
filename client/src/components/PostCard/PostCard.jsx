@@ -1,13 +1,13 @@
-import { apiUrl, avatarUrl } from "../../api/client";
-import React, { useState, useRef } from "react";
+import { apiUrl } from "../../api/client";
+import React, { useState, useRef, useEffect } from "react";
 import useAction from "../../hooks/useAction";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
 import { remove, like, unlike } from "../../post/api";
 import { getHandle, getTimeAgo } from "../../utils/format";
-import { Card, Avatar } from "../common";
 import Comments from "../Comments/Comments";
+import { Avatar, Card } from "../common";
 import styles from "./PostCard.module.css";
 import { Favorite as FavoriteIcon } from "../Icons";
 import { ChatBubbleOutline as ChatBubbleOutlineIcon } from "../Icons";
@@ -33,10 +33,31 @@ export default function PostCard({ post, onRemove, onAuthRequired }) {
     post.likes ? post.likes.length : 0,
   );
   const [comments, setComments] = useState(post.comments || []);
-  const [showComments, setShowComments] = useState(true);
+  const [showComments, setShowComments] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const optionsRef = useRef(null);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+        setShowOptions(false);
+      }
+    };
+    if (typeof document !== "undefined") {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      if (typeof document !== "undefined") {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setIsLiked(Boolean(currentUserId && post.likes?.includes(currentUserId)));
+    setLikesCount(post.likes?.length || 0);
+    setComments(post.comments || []);
+  }, [post.likes, post.comments, currentUserId]);
   const handleLikeToggle = () => {
     if (!authSession) return onAuthRequired?.("like posts");
     action.run(async () => {
@@ -57,20 +78,11 @@ export default function PostCard({ post, onRemove, onAuthRequired }) {
     });
   };
 
-  const authorPhoto =
-    post.postedBy && post.postedBy._id
-      ? avatarUrl(post.postedBy)
-      : apiUrl("/api/users/defaultphoto");
-
   return (
-    <Card as="article" className={styles["post-card"]}>
+    <Card as="article" padding="md" className={styles["post-card"]}>
       <header className={styles["post-card__header"]}>
         <div className={styles["post-card__author"]}>
-          <Avatar
-            src={authorPhoto}
-            alt={post.postedBy ? post.postedBy.name : "User"}
-            size="md"
-          />
+          <Avatar user={post.postedBy} size="md" />
           <div className={styles["post-card__meta"]}>
             <div className={styles["post-card__author-row"]}>
               <Link
@@ -124,9 +136,11 @@ export default function PostCard({ post, onRemove, onAuthRequired }) {
       {post.photo && (
         <div className={styles["post-card__image-wrap"]}>
           <img
-            src={apiUrl(`/api/posts/photo/${post._id}`)}
+            src={post.photo?.url || apiUrl(`/api/posts/photo/${post._id}`)}
             alt="Post attachment"
             className={styles["post-card__image"]}
+            loading="lazy"
+            decoding="async"
           />
         </div>
       )}
