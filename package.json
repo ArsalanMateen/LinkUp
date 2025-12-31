@@ -1,10 +1,12 @@
 {
   "name": "linkup",
   "version": "1.0.0",
-  "description": "LinkUp Social Media Application",
+  "description": "LinkUp Social Media Application (Vite + React + Express ESM)",
   "type": "module",
   "private": true,
   "scripts": {
+    "client": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build",
     "server": "npm --prefix server start",
     "server:dev": "npm --prefix server run dev"
   },
