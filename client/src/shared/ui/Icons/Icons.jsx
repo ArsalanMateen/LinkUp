@@ -58,6 +58,13 @@ export const MailOutline = (props) => (
   </Icon>
 );
 
+export const CalendarTodayOutlined = (props) => (
+  <Icon {...props}>
+    <rect x="3" y="5" width="18" height="16" rx="2" />
+    <path d="M7 3v4m10-4v4M3 11h18" />
+  </Icon>
+);
+
 export const MoreHoriz = (props) => (
   <Icon {...props}>
     <circle cx="5" cy="12" r="1" />

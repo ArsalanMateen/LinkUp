@@ -47,6 +47,11 @@
   color: #64748b;
 }
 
+.calendarIcon {
+  font-size: 16px !important;
+  color: #94a3b8;
+}
+
 .actions {
   display: flex;
   align-items: center;
@@ -71,6 +76,23 @@
   text-align: center;
 }
 
+.statClickable {
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  padding: 6px 4px;
+  transition: all 0.15s ease-in-out;
+}
+
+.statClickable:hover {
+  background-color: var(--bg-hover);
+}
+
+.statDivider {
+  width: 1px;
+  height: 32px;
+  background-color: var(--border-color);
+}
+
 .statCount {
   font-size: 18px;
   font-weight: 700;
@@ -83,4 +105,15 @@
   font-weight: 500;
   color: #64748b;
   margin-top: 2px;
+}
+
+button.statClickable {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+button.statClickable:focus-visible {
+  outline: 2px solid #5c60f5;
+  outline-offset: 3px;
 }
