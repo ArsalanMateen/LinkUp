@@ -1,9 +1,13 @@
 import express from "express";
 import userCtrl from "./user.controller.js";
 import authCtrl from "../auth/auth.controller.js";
+
 const router = express.Router();
+
 router.route("/api/users").get(userCtrl.list).post(userCtrl.create);
+
 router.route("/api/users/photo/:userId").get(userCtrl.photo);
+
 router
   .route("/api/users/follow")
   .put(authCtrl.requireSignin, userCtrl.addFollowing, userCtrl.addFollower);
@@ -14,13 +18,22 @@ router
     userCtrl.removeFollowing,
     userCtrl.removeFollower,
   );
+
 router
   .route("/api/users/findpeople/:uId")
   .get(authCtrl.requireSignin, userCtrl.findPeople);
+router
+  .route("/api/users/:connectionUserId/followers")
+  .get(authCtrl.optionalSignin, userCtrl.listFollowers);
+router
+  .route("/api/users/:connectionUserId/following")
+  .get(authCtrl.optionalSignin, userCtrl.listFollowing);
 router
   .route("/api/users/:uId")
   .get(authCtrl.optionalSignin, userCtrl.read)
   .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update)
   .delete(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.remove);
+
 router.param("uId", userCtrl.userByID);
+
 export default router;
