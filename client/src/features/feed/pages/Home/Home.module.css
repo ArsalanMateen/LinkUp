@@ -4,10 +4,111 @@
   padding: 24px 20px 48px;
 }
 
+.feedHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.feedTitles {
+  display: flex;
+  flex-direction: column;
+}
+
 .feedTitle {
   font-size: 22px;
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.02em;
   margin: 0 0 2px 0;
+}
+
+.feedSubtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.guestCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.guestTop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.guestLogo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.guestText {
+  display: flex;
+  flex-direction: column;
+}
+
+.guestTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.guestSubtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.guestActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.signInButton {
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5c60f5;
+  background-color: transparent;
+  border: 1.5px solid #5c60f5;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.signInButton:hover {
+  background-color: #eef2ff;
+  text-decoration: none;
+}
+
+.signUpButton {
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #5c60f5;
+  border: 1.5px solid #5c60f5;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(92, 96, 245, 0.3);
+  transition: all 0.15s ease;
+}
+
+.signUpButton:hover {
+  background-color: #4e52e2;
+  color: #ffffff;
+  text-decoration: none;
 }
