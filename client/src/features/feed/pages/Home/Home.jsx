@@ -5,6 +5,7 @@ import { useAuth } from "../../../auth/context/AuthProvider";
 import useResource from "../../../../shared/hooks/useResource";
 import useFeed from "../../hooks/useFeed";
 import { listPublic } from "../../../posts/api/postsApi";
+import InfiniteScrollTrigger from "../../../../shared/ui/InfiniteScrollTrigger/InfiniteScrollTrigger";
 import RequestState from "../../../../shared/ui/RequestState/RequestState";
 import Sidebar from "../../../../app/layout/Sidebar/Sidebar";
 import PostComposer from "../../../posts/components/PostComposer/PostComposer";
@@ -37,7 +38,8 @@ export default function Home() {
   useEffect(() => {
     window.addEventListener("feed-refresh-requested", refresh);
 
-    return () => window.removeEventListener("feed-refresh-requested", refresh);
+    return () =>
+      window.removeEventListener("feed-refresh-requested", refresh);
   }, [refresh]);
 
   const handleAuthRequired = useCallback(
@@ -100,10 +102,16 @@ export default function Home() {
                 </div>
               </div>
               <div className={styles.guestActions}>
-                <Link to="/signin" className={styles.signInButton}>
+                <Link
+                  to="/signin"
+                  className={styles.signInButton}
+                >
                   Sign In
                 </Link>
-                <Link to="/signup" className={styles.signUpButton}>
+                <Link
+                  to="/signup"
+                  className={styles.signUpButton}
+                >
                   Create Account
                 </Link>
               </div>
@@ -129,21 +137,16 @@ export default function Home() {
                 inline
               />
               <RequestState loading={authenticatedFeed.loadingMore} inline />
-              <button
-                type="button"
-                onClick={authenticatedFeed.loadMore}
-                disabled={
-                  !(
-                    authenticatedFeed.hasMore &&
-                    !authenticatedFeed.loading &&
-                    !authenticatedFeed.loadingMore &&
-                    !authenticatedFeed.error &&
-                    !authenticatedFeed.paginationError
-                  )
+              <InfiniteScrollTrigger
+                onLoadMore={authenticatedFeed.loadMore}
+                enabled={
+                  authenticatedFeed.hasMore &&
+                  !authenticatedFeed.loading &&
+                  !authenticatedFeed.loadingMore &&
+                  !authenticatedFeed.error &&
+                  !authenticatedFeed.paginationError
                 }
-              >
-                Load more
-              </button>
+              />
             </div>
           )}
         </Col>

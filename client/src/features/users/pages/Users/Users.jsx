@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import useUsers from "../../hooks/useUsers";
 import RequestState from "../../../../shared/ui/RequestState/RequestState";
 import { Avatar, Card } from "../../../../shared/ui";
+import InfiniteScrollTrigger from "../../../../shared/ui/InfiniteScrollTrigger/InfiniteScrollTrigger";
 import { getHandle } from "../../../../shared/utils/format";
 import styles from "./Users.module.css";
 
@@ -41,8 +42,12 @@ export default function Users() {
                 <div className={styles.left}>
                   <Avatar user={user} size="md" />
                   <div className={styles.info}>
-                    <span className={styles.name}>{user.name}</span>
-                    <span className={styles.handle}>{getHandle(user)}</span>
+                    <span className={styles.name}>
+                      {user.name}
+                    </span>
+                    <span className={styles.handle}>
+                      {getHandle(user)}
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -57,21 +62,16 @@ export default function Users() {
           inline
         />
         <RequestState loading={resource.loadingMore} inline />
-        <button
-          type="button"
-          onClick={resource.loadMore}
-          disabled={
-            !(
-              resource.hasMore &&
-              !resource.loading &&
-              !resource.loadingMore &&
-              !resource.error &&
-              !resource.loadMoreError
-            )
+        <InfiniteScrollTrigger
+          onLoadMore={resource.loadMore}
+          enabled={
+            resource.hasMore &&
+            !resource.loading &&
+            !resource.loadingMore &&
+            !resource.error &&
+            !resource.loadMoreError
           }
-        >
-          Load more
-        </button>
+        />
       </div>
     </div>
   );

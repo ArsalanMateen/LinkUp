@@ -14,6 +14,7 @@ import FollowListModal from "../../components/FollowListModal/FollowListModal";
 import AuthPromptModal from "../../../auth/components/AuthPromptModal/AuthPromptModal";
 import PostList from "../../../posts/components/PostList/PostList";
 import PostComposer from "../../../posts/components/PostComposer/PostComposer";
+import InfiniteScrollTrigger from "../../../../shared/ui/InfiniteScrollTrigger/InfiniteScrollTrigger";
 import RequestState from "../../../../shared/ui/RequestState/RequestState";
 import styles from "./Profile.module.css";
 
@@ -70,7 +71,7 @@ export default function Profile({ match }) {
     people.map((person) => ({
       ...person,
       followedByMe:
-        profile.data?.followOverrides[person._id] ?? person.followedByMe,
+        profile.data?.followOverrides[person._id] ?? person.followedByMe
     }));
 
   return (
@@ -124,21 +125,16 @@ export default function Profile({ match }) {
               inline
             />
             <RequestState loading={profilePosts.loadingMore} inline />
-            <button
-              type="button"
-              onClick={profilePosts.loadMore}
-              disabled={
-                !(
-                  profilePosts.hasMore &&
-                  !profilePosts.loading &&
-                  !profilePosts.loadingMore &&
-                  !profilePosts.error &&
-                  !profilePosts.loadMoreError
-                )
+            <InfiniteScrollTrigger
+              onLoadMore={profilePosts.loadMore}
+              enabled={
+                profilePosts.hasMore &&
+                !profilePosts.loading &&
+                !profilePosts.loadingMore &&
+                !profilePosts.error &&
+                !profilePosts.loadMoreError
               }
-            >
-              Load more
-            </button>
+            />
           </div>
         </Col>
 
@@ -194,7 +190,7 @@ export default function Profile({ match }) {
                 followingCount:
                   fields.followingCount ??
                   updatedFollowing?.length ??
-                  previous.user.followingCount,
+                  previous.user.followingCount
               },
             }));
             profilePosts.updateAuthor(updatedUser);
@@ -205,9 +201,7 @@ export default function Profile({ match }) {
         <FollowListModal
           isOpen={dialog === "Following" || dialog === "Followers"}
           title={dialog === "Followers" ? "Followers" : "Following"}
-          count={
-            dialog === "Followers" ? user.followersCount : user.followingCount
-          }
+          count={dialog === "Followers" ? user.followersCount : user.followingCount}
           connections={connections}
           people={withFollowOverrides(connections.users)}
           onClose={() => setDialog(null)}
