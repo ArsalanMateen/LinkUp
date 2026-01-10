@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { getHandle } from "../../../../shared/utils/format";
 import { Avatar, Modal } from "../../../../shared/ui";
 import RequestState from "../../../../shared/ui/RequestState/RequestState";
+import InfiniteScrollTrigger from "../../../../shared/ui/InfiniteScrollTrigger/InfiniteScrollTrigger";
 import styles from "./FollowListModal.module.css";
 
 export default function FollowListModal({
@@ -46,18 +47,26 @@ export default function FollowListModal({
               key={user._id || i}
               className={styles.item}
             >
-              <div className={styles.left}>
+              <div
+                className={styles.left}
+              >
                 <Avatar user={user} size="sm" />
                 <div className={styles.info}>
-                  <span className={styles.name}>{user.name}</span>
-                  <span className={styles.handle}>{getHandle(user)}</span>
+                  <span className={styles.name}>
+                    {user.name}
+                  </span>
+                  <span className={styles.handle}>
+                    {getHandle(user)}
+                  </span>
                 </div>
               </div>
             </Link>
           );
         })
       ) : !connections.loading && !connections.error ? (
-        <div className={styles.empty}>No {title.toLowerCase()} to display</div>
+        <div className={styles.empty}>
+          No {title.toLowerCase()} to display
+        </div>
       ) : null}
       <RequestState
         error={connections.loadMoreError}
@@ -65,21 +74,17 @@ export default function FollowListModal({
         inline
       />
       <RequestState loading={connections.loadingMore} inline />
-      <button
-        type="button"
-        onClick={connections.loadMore}
-        disabled={
-          !(
-            connections.hasMore &&
-            !connections.loading &&
-            !connections.loadingMore &&
-            !connections.error &&
-            !connections.loadMoreError
-          )
+      <InfiniteScrollTrigger
+        rootRef={scrollRoot}
+        onLoadMore={connections.loadMore}
+        enabled={
+          connections.hasMore &&
+          !connections.loading &&
+          !connections.loadingMore &&
+          !connections.error &&
+          !connections.loadMoreError
         }
-      >
-        Load more
-      </button>
+      />
     </Modal>
   );
 }
