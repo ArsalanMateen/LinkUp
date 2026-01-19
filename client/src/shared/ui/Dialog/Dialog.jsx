@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
+let openDialogs = 0;
+let originalOverflow = "";
+
 const focusable = (node) =>
   Array.from(
     node.querySelectorAll(
@@ -33,11 +36,17 @@ export default function Dialog({
     const node = ref.current;
     const opener = document.activeElement;
 
+    if (openDialogs++ === 0) {
+      originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+    }
+
     node.showModal();
     (focusable(node)[0] || node).focus();
 
     return () => {
       node.close();
+      if (--openDialogs === 0) document.body.style.overflow = originalOverflow;
       if (opener?.isConnected) opener.focus();
     };
   }, [isOpen]);
