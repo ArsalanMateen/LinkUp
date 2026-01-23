@@ -1,25 +1,42 @@
-import React from "react";
-import { Route, Switch } from "react-router-dom";
+import React, { lazy, Suspense } from "react";
+import { Route, Switch, useLocation } from "react-router-dom";
 import Home from "../features/feed/pages/Home/Home.jsx";
-import Signup from "../features/auth/pages/SignUp/SignUp.jsx";
-import Signin from "../features/auth/pages/SignIn/SignIn.jsx";
-import Profile from "../features/users/pages/Profile/Profile.jsx";
-import Users from "../features/users/pages/Users/Users.jsx";
-import EditProfile from "../features/users/pages/EditProfile/EditProfile.jsx";
-import Navbar from "./layout/Navbar/Navbar";
 import PrivateRoute from "../features/auth/components/PrivateRoute";
-export default function MainRouter() {
+import Navbar from "./layout/Navbar/Navbar";
+import RequestState from "../shared/ui/RequestState/RequestState";
+import RouteErrorBoundary from "./RouteErrorBoundary";
+
+const Users = lazy(() => import("../features/users/pages/Users/Users.jsx"));
+const Signup = lazy(() => import("../features/auth/pages/SignUp/SignUp.jsx"));
+const Signin = lazy(() => import("../features/auth/pages/SignIn/SignIn.jsx"));
+const EditProfile = lazy(() => import("../features/users/pages/EditProfile/EditProfile.jsx"));
+const Profile = lazy(() => import("../features/users/pages/Profile/Profile.jsx"));
+
+const MainRouter = () => {
+  const location = useLocation();
+
   return (
     <div>
       <Navbar />
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/users" component={Users} />
-        <Route exact path="/signup" component={Signup} />
-        <Route exact path="/signin" component={Signin} />
-        <PrivateRoute exact path="/user/edit/:userId" component={EditProfile} />
-        <Route exact path="/user/:userId" component={Profile} />
-      </Switch>
+      <RouteErrorBoundary key={location.pathname}>
+        <Suspense fallback={<RequestState loading />}>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/users" component={Users} />
+            <Route path="/signup" component={Signup} />
+            <Route path="/signin" component={Signin} />
+            <PrivateRoute path="/user/edit/:userId" component={EditProfile} />
+            <Route
+              path="/user/:userId"
+              render={(props) => (
+                <Profile key={props.match.params.userId} {...props} />
+              )}
+            />
+          </Switch>
+        </Suspense>
+      </RouteErrorBoundary>
     </div>
   );
-}
+};
+
+export default MainRouter;
