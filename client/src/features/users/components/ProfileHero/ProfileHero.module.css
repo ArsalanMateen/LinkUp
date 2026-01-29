@@ -107,6 +107,31 @@
   margin-top: 2px;
 }
 
+@media (max-width: 640px) {
+  .root {
+    padding: 20px 16px;
+  }
+  .left {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .joined {
+    justify-content: center;
+  }
+  .actions {
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .statCount {
+    font-size: 16px;
+  }
+  .statLabel {
+    font-size: 12px;
+  }
+}
+
 button.statClickable {
   border: 0;
   background: transparent;
